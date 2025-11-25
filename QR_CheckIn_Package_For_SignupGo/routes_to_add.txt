@@ -1,0 +1,44 @@
+# Routes to Add to SignupGo
+
+Add these routes to your `routes/web.php` file:
+
+```php
+// ============================================================================
+// QR CODE CHECK-IN ROUTES
+// ============================================================================
+
+// QR Code Check-In Routes (Public - no auth required for scanning)
+Route::prefix('check-in')->name('qr.scan.')->group(function () {
+    Route::get('/{qrCode}', [App\Http\Controllers\QrCheckInController::class, 'scan'])->name('registration');
+    Route::post('/{qrCode}', [App\Http\Controllers\QrCheckInController::class, 'checkIn'])->name('process');
+});
+
+// User Dashboard - Registration Management (Protected - auth required)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/registrations', [App\Http\Controllers\EventRegistrationController::class, 'index'])->name('dashboard.registrations');
+    Route::get('/dashboard/registrations/{registration}', [App\Http\Controllers\EventRegistrationController::class, 'show'])->name('dashboard.registrations.show');
+});
+```
+
+## Where to Add:
+
+1. Open `routes/web.php`
+2. Find your existing user authentication routes (after `Route::middleware(['auth'])` section)
+3. Add the code above
+4. Save the file
+5. Clear route cache: `php artisan route:clear`
+
+## Verify Routes Were Added:
+
+Run this command to check:
+
+```powershell
+php artisan route:list | findstr "check-in"
+php artisan route:list | findstr "dashboard.registrations"
+```
+
+You should see:
+- `GET check-in/{qrCode}` → `QrCheckInController@scan`
+- `POST check-in/{qrCode}` → `QrCheckInController@checkIn`
+- `GET dashboard/registrations` → `EventRegistrationController@index`
+- `GET dashboard/registrations/{registration}` → `EventRegistrationController@show`

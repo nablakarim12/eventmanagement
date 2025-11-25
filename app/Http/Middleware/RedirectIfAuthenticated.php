@@ -21,7 +21,15 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                // Redirect based on the guard
+                switch ($guard) {
+                    case 'admin':
+                        return redirect('/admin/dashboard');
+                    case 'event-organizer':
+                        return redirect('/organizer/dashboard');
+                    default:
+                        return redirect(RouteServiceProvider::HOME);
+                }
             }
         }
 

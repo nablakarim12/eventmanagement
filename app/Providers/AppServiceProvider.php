@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Share pending organizers count with admin views
+        view()->composer('admin.*', function ($view) {
+            $view->with('pendingOrganizers', \App\Models\EventOrganizer::where('status', 'pending')->count());
+        });
     }
 }

@@ -1,14 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Laravel</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EventSphere - Smart Conference and Innovation Event System</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
 
         <!-- Styles -->
         <style>
@@ -16,20 +13,155 @@
         </style>
     </head>
     <body class="antialiased">
-        <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-            @if (Route::has('login'))
-                <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
-                    @auth
-                        <a href="{{ url('/home') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Home</a>
-                    @else
-                        <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Log in</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Register</a>
-                        @endif
-                    @endauth
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0 flex items-center space-x-2">
+                        <img src="{{ asset('assets/images/eventsphere-icon.svg') }}" alt="EventSphere" class="h-8 w-8">
+                        <h1 class="text-2xl font-bold text-gray-800">EventSphere</h1>
+                    </div>
                 </div>
-            @endif
+
+                <!-- Navigation Links -->
+                <div class="flex items-center space-x-4">
+                    <a href="{{ route('admin.login') }}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                        Admin Login
+                    </a>
+                    <a href="{{ route('organizer.login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Event Organizer Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex justify-center items-center space-x-4 mb-6">
+                    <img src="{{ asset('assets/images/eventsphere-icon.svg') }}" alt="EventSphere" class="h-16 w-16 brightness-0 invert">
+                    <h1 class="text-4xl font-extrabold sm:text-5xl md:text-6xl">
+                        EventSphere
+                    </h1>
+                </div>
+                <p class="mt-4 text-xl text-blue-100">
+                    Smart Conference and Innovation Event System
+                </p>
+                <p class="mt-2 text-lg text-blue-200">
+                    Manage academic conferences and innovation competitions efficiently
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- Event Types Section -->
+    <div class="py-12 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                    Event Categories
+                </h2>
+            </div>
+            <div class="mt-10">
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    <!-- Academic Conference -->
+                    <div class="bg-gray-50 rounded-lg p-6 hover:shadow-lg transition duration-300">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Academic Conference</h3>
+                        <p class="text-gray-600">
+                            Platform for researchers and academics to present and discuss their work. 
+                            Submit papers, get expert reviews, and participate in scholarly discussions.
+                        </p>
+                    </div>
+
+                    <!-- Innovation Competition -->
+                    <div class="bg-gray-50 rounded-lg p-6 hover:shadow-lg transition duration-300">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Innovation Competition</h3>
+                        <p class="text-gray-600">
+                            Showcase your innovative ideas and projects. Get evaluated by expert jury members
+                            and compete with other innovative minds.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="bg-gray-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                    Key Features
+                </h2>
+            </div>
+            <div class="mt-10">
+                <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+                    <div class="text-center">
+                        <div class="bg-blue-500 rounded-full p-3 w-12 h-12 mx-auto mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Easy Registration</h3>
+                        <p class="mt-2 text-gray-600">Simple process for organizers, participants, and jury members</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-blue-500 rounded-full p-3 w-12 h-12 mx-auto mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Efficient Management</h3>
+                        <p class="mt-2 text-gray-600">Streamlined process for event organization and participation</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="bg-blue-500 rounded-full p-3 w-12 h-12 mx-auto mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900">Digital Certificates</h3>
+                        <p class="mt-2 text-gray-600">Automated certificate generation for participants</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About Us</h3>
+                    <p class="text-gray-400">
+                        A comprehensive platform for managing academic conferences and innovation competitions.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Events</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <p class="text-gray-400">
+                        Email: info@eventsphere.com<br>
+                        Phone: (123) 456-7890
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center">
+                <p class="text-gray-400">&copy; {{ date('Y') }} Event Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
             <div class="max-w-7xl mx-auto p-6 lg:p-8">
                 <div class="flex justify-center">
@@ -48,7 +180,7 @@
                                     </svg>
                                 </div>
 
-                                <h2 class="mt-6 text-xl font-semibold text-gray-900 dark:text-white">Documentation</h2>
+                                <h2 class="mt-6 text-xl font-semibold text-gray-900 dark:text-white"></h2>
 
                                 <p class="mt-4 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                                     Laravel has wonderful documentation covering every aspect of the framework. Whether you are a newcomer or have prior experience with Laravel, we recommend reading our documentation from beginning to end.

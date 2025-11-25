@@ -75,7 +75,14 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'sslmode' => 'require',
+            'trust_server_certificate' => true,
+            'options' => [
+                PDO::ATTR_PERSISTENT => true,
+                PDO::ATTR_EMULATE_PREPARES => true,
+                PDO::ATTR_TIMEOUT => 30,
+                PDO::ATTR_PERSISTENT => false,
+            ],
         ],
 
         'sqlsrv' => [

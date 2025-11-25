@@ -1,0 +1,56 @@
+<svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .hex-pattern { fill: #0891b2; }
+      .logo-text { fill: #374151; font-family: 'Arial', sans-serif; font-weight: bold; }
+      .logo-text-highlight { fill: #0891b2; }
+      .tagline { fill: #6b7280; font-family: 'Arial', sans-serif; font-size: 8px; }
+    </style>
+  </defs>
+  
+  <!-- Hexagonal dome pattern -->
+  <g transform="translate(10, 5)">
+    <!-- Create hexagonal dome -->
+    <path d="M30 35 Q30 10 50 10 Q70 10 70 35" fill="none" stroke="#0891b2" stroke-width="1"/>
+    
+    <!-- Hexagon pattern -->
+    <g class="hex-pattern">
+      <!-- Top row -->
+      <polygon points="45,15 48,18 48,22 45,25 42,22 42,18" />
+      <polygon points="52,15 55,18 55,22 52,25 49,22 49,18" />
+      
+      <!-- Second row -->
+      <polygon points="38,22 41,25 41,29 38,32 35,29 35,25" />
+      <polygon points="45,22 48,25 48,29 45,32 42,29 42,25" />
+      <polygon points="52,22 55,25 55,29 52,32 49,29 49,25" />
+      <polygon points="59,22 62,25 62,29 59,32 56,29 56,25" />
+      
+      <!-- Third row -->
+      <polygon points="31,29 34,32 34,36 31,39 28,36 28,32" />
+      <polygon points="38,29 41,32 41,36 38,39 35,36 35,32" />
+      <polygon points="45,29 48,32 48,36 45,39 42,36 42,32" />
+      <polygon points="52,29 55,32 55,36 52,39 49,36 49,32" />
+      <polygon points="59,29 62,32 62,36 59,39 56,36 56,32" />
+      <polygon points="66,29 69,32 69,36 66,39 63,36 63,32" />
+      
+      <!-- Fourth row -->
+      <polygon points="24,36 27,39 27,43 24,46 21,43 21,39" />
+      <polygon points="31,36 34,39 34,43 31,46 28,43 28,39" />
+      <polygon points="38,36 41,39 41,43 38,46 35,43 35,39" />
+      <polygon points="45,36 48,39 48,43 45,46 42,43 42,39" />
+      <polygon points="52,36 55,39 55,43 52,46 49,43 49,39" />
+      <polygon points="59,36 62,39 62,43 59,46 56,43 56,39" />
+      <polygon points="66,36 69,39 69,43 66,46 63,43 63,39" />
+      <polygon points="73,36 76,39 76,43 73,46 70,43 70,39" />
+    </g>
+  </g>
+  
+  <!-- Logo text -->
+  <text x="95" y="30" class="logo-text" font-size="18">EVENT</text>
+  <text x="95" y="30" class="logo-text-highlight" font-size="18">EVENT</text>
+  <text x="140" y="30" class="logo-text-highlight" font-size="18">SPHERE</text>
+  
+  <!-- Tagline -->
+  <text x="95" y="42" class="tagline">SMART CONFERENCE AND</text>
+  <text x="95" y="52" class="tagline">INNOVATION EVENT SYSTEM</text>
+</svg>

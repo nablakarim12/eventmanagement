@@ -53,17 +53,23 @@
             <div class="px-8 py-6 border-b border-gray-700">
                 <h2 class="text-sm font-semibold text-gray-300 mb-4 uppercase tracking-wider">User Management</h2>
                 <nav class="space-y-3">
+                    @if(Route::has('admin.organizers.index'))
                     <a href="{{ route('admin.organizers.index') }}" 
                        class="flex items-center px-4 py-3 text-base text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg group transition-all duration-200">
                         <svg class="mr-4 h-5 w-5 text-gray-400 group-hover:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                         <span class="flex-1">Event Organizers</span>
+                        @php
+                            $pendingOrganizers = \App\Models\EventOrganizer::where('status', 'pending')->count();
+                        @endphp
                         @if($pendingOrganizers > 0)
                         <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ $pendingOrganizers }}</span>
                         @endif
                     </a>
+                    @endif
 
+                    @if(Route::has('admin.approvals.index'))
                     <a href="{{ route('admin.approvals.index') }}" 
                        class="flex items-center px-4 py-3 text-base text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg group transition-all duration-200">
                         <svg class="mr-4 h-5 w-5 text-gray-400 group-hover:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -77,6 +83,7 @@
                         <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">{{ $pendingApprovals }}</span>
                         @endif
                     </a>
+                    @endif
 
                     <a href="#" 
                        class="flex items-center px-4 py-3 text-base text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg group transition-all duration-200">

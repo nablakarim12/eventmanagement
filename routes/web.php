@@ -75,7 +75,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/events/{event}/attendance', [DashboardController::class, 'showAttendanceForm'])->name('dashboard.attendance.form');
     Route::post('/dashboard/events/{event}/attendance', [DashboardController::class, 'submitAttendance'])->name('dashboard.attendance.submit');
 
-    // Jury Review Routes (Paper submission handled by friend's system)
+    // Paper Submission Routes (for Conference Events)
+    Route::prefix('papers')->name('papers.')->group(function () {
+        Route::get('/', [App\Http\Controllers\PaperSubmissionController::class, 'index'])->name('index');
+        Route::get('/event/{event}/create', [App\Http\Controllers\PaperSubmissionController::class, 'create'])->name('create');
+        Route::post('/event/{event}', [App\Http\Controllers\PaperSubmissionController::class, 'store'])->name('store');
+        Route::get('/{paper}', [App\Http\Controllers\PaperSubmissionController::class, 'show'])->name('show');
+        Route::get('/{paper}/download', [App\Http\Controllers\PaperSubmissionController::class, 'download'])->name('download');
+    });
+
+    // Jury Review Routes (for Innovation & Conference Events)
     Route::prefix('jury')->name('jury.')->group(function () {
         Route::get('/papers', [App\Http\Controllers\Jury\PaperReviewController::class, 'index'])->name('papers.index');
         Route::get('/papers/{assignment}', [App\Http\Controllers\Jury\PaperReviewController::class, 'show'])->name('papers.show');
@@ -84,6 +93,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/papers/{assignment}/review', [App\Http\Controllers\Jury\PaperReviewController::class, 'storeReview'])->name('papers.review.store');
         Route::post('/papers/{assignment}/accept', [App\Http\Controllers\Jury\PaperReviewController::class, 'acceptAssignment'])->name('papers.accept');
         Route::post('/papers/{assignment}/decline', [App\Http\Controllers\Jury\PaperReviewController::class, 'declineAssignment'])->name('papers.decline');
+    });
+    
+    // Presentation QR Code Routes (for Approved Presenters)
+    Route::prefix('presentation-qr')->name('participant.presentation-qr.')->group(function () {
+        Route::get('/{event}', [App\Http\Controllers\Participant\PresentationQrController::class, 'show'])->name('show');
+        Route::get('/{event}/download', [App\Http\Controllers\Participant\PresentationQrController::class, 'download'])->name('download');
     });
 });
 
@@ -148,6 +163,10 @@ Route::prefix('organizer')->name('organizer.')->group(function () {
         Route::post('register', [OrganizerAuthController::class, 'register']);
         Route::get('login', [OrganizerAuthController::class, 'showLoginForm'])->name('login');
         Route::post('login', [OrganizerAuthController::class, 'login']);
+        
+        // Google OAuth routes
+        Route::get('auth/google', [OrganizerAuthController::class, 'redirectToGoogle'])->name('google.redirect');
+        Route::get('auth/google/callback', [OrganizerAuthController::class, 'handleGoogleCallback'])->name('google.callback');
     });
 
     // Protected routes
@@ -212,6 +231,9 @@ Route::prefix('organizer')->name('organizer.')->group(function () {
         // QR Code Management (General)
         Route::get('qr-codes', [App\Http\Controllers\Organizer\QrCodeController::class, 'indexGeneral'])->name('qr-codes.index');
         Route::get('qr-codes/{qrCode}', [App\Http\Controllers\Organizer\QrCodeController::class, 'showGeneral'])->name('qr-codes.show');
+        Route::get('qr-codes/{qrCode}/edit', [App\Http\Controllers\Organizer\QrCodeController::class, 'editGeneral'])->name('qr-codes.edit');
+        Route::put('qr-codes/{qrCode}', [App\Http\Controllers\Organizer\QrCodeController::class, 'updateGeneral'])->name('qr-codes.update');
+        Route::post('qr-codes/{qrCode}/toggle', [App\Http\Controllers\Organizer\QrCodeController::class, 'toggleGeneral'])->name('qr-codes.toggle');
         Route::get('qr-codes/{qrCode}/download', [App\Http\Controllers\Organizer\QrCodeController::class, 'downloadGeneral'])->name('qr-codes.download');
         Route::delete('qr-codes/{qrCode}', [App\Http\Controllers\Organizer\QrCodeController::class, 'destroyGeneral'])->name('qr-codes.destroy');
         
@@ -245,6 +267,11 @@ Route::prefix('organizer')->name('organizer.')->group(function () {
         Route::get('certificates/event/{event}/eligible-attendees', [App\Http\Controllers\Organizer\CertificateController::class, 'eligibleAttendees'])->name('certificates.eligible-attendees');
         Route::post('certificates/event/{event}/generate-from-attendance', [App\Http\Controllers\Organizer\CertificateController::class, 'generateFromAttendance'])->name('certificates.generate-from-attendance');
         
+        // Feedback Management
+        Route::get('feedback', [App\Http\Controllers\Organizer\FeedbackController::class, 'index'])->name('feedback.index');
+        Route::get('feedback/{event}', [App\Http\Controllers\Organizer\FeedbackController::class, 'show'])->name('feedback.show');
+        Route::get('feedback/{event}/export', [App\Http\Controllers\Organizer\FeedbackController::class, 'export'])->name('feedback.export');
+        
         // Paper Management Routes
         Route::prefix('events/{event}/papers')->name('events.papers.')->group(function () {
             Route::get('/', [App\Http\Controllers\Organizer\PaperManagementController::class, 'index'])->name('index');
@@ -253,6 +280,45 @@ Route::prefix('organizer')->name('organizer.')->group(function () {
             Route::post('/{paper}/assign-jury', [App\Http\Controllers\Organizer\PaperManagementController::class, 'assignJury'])->name('assign-jury');
             Route::delete('/{paper}/jury/{assignment}', [App\Http\Controllers\Organizer\PaperManagementController::class, 'removeJury'])->name('remove-jury');
             Route::post('/{paper}/update-status', [App\Http\Controllers\Organizer\PaperManagementController::class, 'updateStatus'])->name('update-status');
+        });
+        
+        // Rubric Management Routes
+        Route::prefix('events/{event}/rubrics')->name('events.rubrics.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Organizer\RubricController::class, 'index'])->name('index');
+            Route::get('/edit', [App\Http\Controllers\Organizer\RubricController::class, 'edit'])->name('edit');
+            Route::put('/update', [App\Http\Controllers\Organizer\RubricController::class, 'update'])->name('update');
+            Route::post('/set-default', [App\Http\Controllers\Organizer\RubricController::class, 'setDefault'])->name('set-default');
+            Route::get('/preview', [App\Http\Controllers\Organizer\RubricController::class, 'preview'])->name('preview');
+            
+            // AI Generation Routes
+            Route::get('/generate-ai', [App\Http\Controllers\Organizer\RubricController::class, 'generateWithAI'])->name('generate-ai');
+            Route::post('/process-ai', [App\Http\Controllers\Organizer\RubricController::class, 'processAIGeneration'])->name('process-ai');
+            Route::get('/preview-ai', [App\Http\Controllers\Organizer\RubricController::class, 'previewAI'])->name('preview-ai');
+            Route::post('/confirm-ai', [App\Http\Controllers\Organizer\RubricController::class, 'confirmAI'])->name('confirm-ai');
+        });
+        
+        // Evaluation Results Routes
+        Route::prefix('evaluation-results')->name('evaluation-results.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Organizer\EvaluationResultsController::class, 'index'])->name('index');
+            Route::get('/event/{event}', [App\Http\Controllers\Organizer\EvaluationResultsController::class, 'showEvent'])->name('show-event');
+            Route::get('/event/{event}/paper/{paperId}', [App\Http\Controllers\Organizer\EvaluationResultsController::class, 'showPaperDetails'])->name('paper-details');
+            Route::post('/event/{event}/paper/{paperId}/approve', [App\Http\Controllers\Organizer\EvaluationResultsController::class, 'approvePresentation'])->name('approve-presentation');
+            Route::post('/event/{event}/paper/{paperId}/reject', [App\Http\Controllers\Organizer\EvaluationResultsController::class, 'rejectPresentation'])->name('reject-presentation');
+            Route::get('/event/{event}/export', [App\Http\Controllers\Organizer\EvaluationResultsController::class, 'export'])->name('export');
+        });
+
+        // Award Management Routes (for Innovation Events)
+        Route::prefix('events/{event}/awards')->name('awards.')->group(function () {
+            Route::get('/setup', [App\Http\Controllers\Organizer\AwardManagementController::class, 'setup'])->name('setup');
+            Route::get('/', [App\Http\Controllers\Organizer\AwardManagementController::class, 'index'])->name('index');
+            Route::post('/store', [App\Http\Controllers\Organizer\AwardManagementController::class, 'storeAward'])->name('store');
+            Route::delete('/{award}', [App\Http\Controllers\Organizer\AwardManagementController::class, 'deleteAward'])->name('delete');
+            Route::post('/auto-suggest', [App\Http\Controllers\Organizer\AwardManagementController::class, 'autoSuggestRankings'])->name('auto-suggest');
+            Route::post('/assign', [App\Http\Controllers\Organizer\AwardManagementController::class, 'assignAward'])->name('assign');
+            Route::post('/assign-multiple', [App\Http\Controllers\Organizer\AwardManagementController::class, 'assignMultipleAwards'])->name('assign-multiple');
+            Route::get('/participant/{user}', [App\Http\Controllers\Organizer\AwardManagementController::class, 'getParticipantAwards'])->name('participant-awards');
+            Route::post('/publish', [App\Http\Controllers\Organizer\AwardManagementController::class, 'publishAwards'])->name('publish');
+            Route::post('/unpublish', [App\Http\Controllers\Organizer\AwardManagementController::class, 'unpublishAwards'])->name('unpublish');
         });
         
         // Jury Assignment Routes (for Innovation Competitions)
@@ -265,8 +331,74 @@ Route::prefix('organizer')->name('organizer.')->group(function () {
             Route::post('/clear-all', [App\Http\Controllers\Organizer\JuryAssignmentController::class, 'clearAll'])->name('clear-all');
         });
         
-        // Jury Mapping Overview
+        // Jury Mapping Overview (Conference Reviewers)
         Route::get('jury-mapping', [App\Http\Controllers\Organizer\JuryMappingController::class, 'index'])->name('jury-mapping.index');
         Route::get('jury-mapping/{event}', [App\Http\Controllers\Organizer\JuryMappingController::class, 'show'])->name('jury-mapping.show');
+        Route::get('jury-mapping/{event}/eligible-reviewers/{participant}', [App\Http\Controllers\Organizer\JuryMappingController::class, 'getEligibleReviewers'])->name('jury-mapping.eligible-reviewers');
+        Route::post('jury-mapping/{event}/assign', [App\Http\Controllers\Organizer\JuryMappingController::class, 'assignReviewer'])->name('jury-mapping.assign');
+        Route::delete('jury-mapping/mappings/{mapping}', [App\Http\Controllers\Organizer\JuryMappingController::class, 'removeReviewer'])->name('jury-mapping.remove');
+        Route::post('jury-mapping/{event}/auto-assign', [App\Http\Controllers\Organizer\JuryMappingController::class, 'autoAssign'])->name('jury-mapping.auto-assign');
+        
+        // Presentation Selection (Conference Events)
+        Route::prefix('presentations/{event}')->name('presentations.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Organizer\PresentationSelectionController::class, 'index'])->name('index');
+            Route::post('/participant/{participant}/select', [App\Http\Controllers\Organizer\PresentationSelectionController::class, 'select'])->name('select');
+            Route::post('/participant/{participant}/reject', [App\Http\Controllers\Organizer\PresentationSelectionController::class, 'reject'])->name('reject');
+            Route::post('/bulk-select', [App\Http\Controllers\Organizer\PresentationSelectionController::class, 'bulkSelect'])->name('bulk-select');
+            Route::post('/auto-select', [App\Http\Controllers\Organizer\PresentationSelectionController::class, 'autoSelect'])->name('auto-select');
+            Route::post('/participant/{participant}/update-details', [App\Http\Controllers\Organizer\PresentationSelectionController::class, 'updateDetails'])->name('update-details');
+            Route::post('/participant/{participant}/resend-notification', [App\Http\Controllers\Organizer\PresentationSelectionController::class, 'resendNotification'])->name('resend-notification');
+        });
+        
+        // Presentation Check-In (Conference Events)
+        Route::prefix('presentation-checkin/{event}')->name('presentation-checkin.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Organizer\PresentationCheckInController::class, 'index'])->name('index');
+            Route::get('/scanner', [App\Http\Controllers\Organizer\PresentationCheckInController::class, 'scanner'])->name('scanner');
+            Route::post('/generate-all-qr', [App\Http\Controllers\Organizer\PresentationCheckInController::class, 'generateAllQrCodes'])->name('generate-all-qr');
+            Route::post('/scan', [App\Http\Controllers\Organizer\PresentationCheckInController::class, 'processScan'])->name('process-scan');
+            Route::post('/participant/{registration}/manual-checkin', [App\Http\Controllers\Organizer\PresentationCheckInController::class, 'manualCheckIn'])->name('manual-checkin');
+            Route::post('/participant/{registration}/undo-checkin', [App\Http\Controllers\Organizer\PresentationCheckInController::class, 'undoCheckIn'])->name('undo-checkin');
+            Route::get('/participant/{registration}/download-qr', [App\Http\Controllers\Organizer\PresentationCheckInController::class, 'downloadQr'])->name('download-qr');
+        });
+        
+        // Simple Certificate System (Manual Upload)
+        Route::prefix('simple-certificates')->name('simple-certificates.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Organizer\SimpleCertificateController::class, 'index'])->name('index');
+            Route::get('/events/{event}/builder', [App\Http\Controllers\Organizer\SimpleCertificateController::class, 'showTemplateBuilder'])->name('builder');
+            Route::post('/upload/{registration}', [App\Http\Controllers\Organizer\SimpleCertificateController::class, 'uploadCertificate'])->name('upload');
+            Route::post('/events/{event}/send-all', [App\Http\Controllers\Organizer\SimpleCertificateController::class, 'sendAllCertificates'])->name('send-all');
+            Route::get('/events/{event}/attendees', [App\Http\Controllers\Organizer\SimpleCertificateController::class, 'showAttendees'])->name('attendees');
+        });
+
+        // Payment Settings
+        Route::prefix('payment')->name('payment.')->group(function () {
+            Route::get('/events/{event}/setup', [App\Http\Controllers\Organizer\PaymentSettingController::class, 'showSetupForm'])->name('setup');
+            Route::post('/events/{event}/setup', [App\Http\Controllers\Organizer\PaymentSettingController::class, 'saveSettings'])->name('save');
+        });
+        
+        // Payment Verification
+        Route::prefix('payment-verification')->name('payment-verification.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Organizer\PaymentVerificationController::class, 'index'])->name('index');
+            Route::get('/event/{event}', [App\Http\Controllers\Organizer\PaymentVerificationController::class, 'event'])->name('event');
+            Route::get('/registration/{registration}', [App\Http\Controllers\Organizer\PaymentVerificationController::class, 'show'])->name('show');
+            Route::get('/registration/{registration}/receipt', [App\Http\Controllers\Organizer\PaymentVerificationController::class, 'viewReceipt'])->name('view-receipt');
+            Route::post('/registration/{registration}/approve', [App\Http\Controllers\Organizer\PaymentVerificationController::class, 'approve'])->name('approve');
+            Route::post('/registration/{registration}/reject', [App\Http\Controllers\Organizer\PaymentVerificationController::class, 'reject'])->name('reject');
+        });
+        
+        // Template-based Certificate Generation (Old System)
+        Route::get('/certificates', [App\Http\Controllers\Organizer\TemplateCertificateController::class, 'list'])->name('template-certificates.list');
+        Route::get('/events/{event}/certificates/attendees', [App\Http\Controllers\Organizer\TemplateCertificateController::class, 'viewAttendees'])->name('template-certificates.attendees');
+        Route::prefix('events/{event}/certificates')->name('template-certificates.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Organizer\TemplateCertificateController::class, 'index'])->name('index');
+            Route::get('/upload', [App\Http\Controllers\Organizer\TemplateCertificateController::class, 'showUploadForm'])->name('upload-form');
+            Route::post('/upload', [App\Http\Controllers\Organizer\TemplateCertificateController::class, 'uploadTemplate'])->name('upload');
+            Route::post('/generate-all', [App\Http\Controllers\Organizer\TemplateCertificateController::class, 'generateAll'])->name('generate-all');
+        });
+        
+        Route::get('/certificates/{certificate}/download', [App\Http\Controllers\Organizer\TemplateCertificateController::class, 'download'])->name('template-certificates.download');
     });
 });
+
+// Public certificate viewing
+Route::get('/certificates/{certificate}', [App\Http\Controllers\CertificateViewController::class, 'view'])->name('certificates.view');

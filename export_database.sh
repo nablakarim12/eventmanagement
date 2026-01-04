@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# EventSphere Database Export Script
+# ConVex Database Export Script
 # Run this to export current database schema and data for sharing
 
 # Export database schema only (structure)

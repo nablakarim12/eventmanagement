@@ -65,25 +65,33 @@
                 <div class="p-6">
                     <div class="text-center">
                         <div class="inline-block p-8 bg-gray-50 rounded-lg">
-                            <div class="w-64 h-64 mx-auto">
-                                {!! $qrCode->getQRCodeSVG() !!}
+                            <div class="w-64 h-64 mx-auto flex items-center justify-center">
+                                @if($qrCode->qr_image_path)
+                                    @php
+                                        $imagePath = str_starts_with($qrCode->qr_image_path, 'qr_codes/') 
+                                            ? 'storage/' . $qrCode->qr_image_path 
+                                            : 'storage/qr_codes/' . basename($qrCode->qr_image_path);
+                                    @endphp
+                                    <img src="{{ asset($imagePath) }}" 
+                                         alt="QR Code" 
+                                         class="w-full h-full object-contain"
+                                         onerror="this.parentElement.innerHTML='<div class=\'text-center text-gray-400\'><i class=\'fas fa-qrcode text-6xl mb-2\'></i><p class=\'text-sm\'>QR Code image not found</p></div>'">
+                                @else
+                                    <div class="text-center text-gray-400">
+                                        <i class="fas fa-qrcode text-6xl mb-2"></i>
+                                        <p class="text-sm">QR Code image not available</p>
+                                        <p class="text-xs mt-1">Please regenerate</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <div class="mt-6">
                             <p class="text-sm text-gray-500 mb-4">Scan this QR code with any QR code scanner</p>
                             <div class="flex justify-center space-x-4">
-                                <button onclick="downloadQR('png')" 
-                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    PNG
-                                </button>
-                                <button onclick="downloadQR('svg')" 
-                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    SVG
-                                </button>
-                                <button onclick="downloadQR('pdf')" 
-                                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    PDF
-                                </button>
+                                <a href="{{ route('organizer.qr-codes.download', $qrCode) }}" 
+                                   class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <i class="fas fa-download mr-2"></i>Download PNG
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -98,16 +106,16 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-indigo-600">{{ $qrCode->scan_count }}</div>
+                            <div class="text-3xl font-bold text-indigo-600">{{ $qrCode->scan_count ?? 0 }}</div>
                             <div class="text-sm text-gray-500">Total Scans</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-green-600">{{ $qrCode->unique_scans_count }}</div>
-                            <div class="text-sm text-gray-500">Unique Users</div>
+                            <div class="text-3xl font-bold text-green-600">{{ $qrCode->is_active ? 'Active' : 'Inactive' }}</div>
+                            <div class="text-sm text-gray-500">Status</div>
                         </div>
                         <div class="text-center">
-                            <div class="text-3xl font-bold text-blue-600">{{ $qrCode->scans_today }}</div>
-                            <div class="text-sm text-gray-500">Scans Today</div>
+                            <div class="text-3xl font-bold text-blue-600">{{ $qrCode->last_scanned_at ? $qrCode->last_scanned_at->diffForHumans() : 'Never' }}</div>
+                            <div class="text-sm text-gray-500">Last Scan</div>
                         </div>
                     </div>
 
@@ -270,7 +278,7 @@
                 </div>
                 <div class="p-6">
                     <div class="flex">
-                        <input type="text" id="qr-url" value="{{ $qrCode->getPublicUrl() }}" readonly
+                        <input type="text" id="qr-url" value="{{ route('qr.scan', ['qrCode' => $qrCode->qr_code]) }}" readonly
                                class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-50">
                         <button onclick="copyUrl()" 
                                 class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">

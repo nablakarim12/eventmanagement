@@ -61,6 +61,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the event papers for the user
+     */
+    public function eventPapers(): HasMany
+    {
+        return $this->hasMany(EventPaper::class);
+    }
+
+    /**
      * Check if user is registered for a specific event
      */
     public function isRegisteredFor(Event $event): bool

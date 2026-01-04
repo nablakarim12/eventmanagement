@@ -5,15 +5,42 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
+    <!-- Breadcrumb -->
+    <div class="mb-4">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ route('organizer.registrations.index') }}" class="text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-list mr-2"></i>All Events
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="{{ route('organizer.registrations.event', $registration->event_id) }}" class="text-gray-700 hover:text-blue-600">
+                            {{ Str::limit($registration->event->title, 30) }}
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-gray-500">{{ $registration->user->name }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
     <div class="flex justify-between items-center mb-6">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Registration Details</h1>
             <p class="text-gray-600 mt-1">{{ $registration->event->title }}</p>
         </div>
         <div class="flex space-x-3">
-            <a href="{{ route('organizer.registrations.index') }}" 
+            <a href="{{ route('organizer.registrations.event', $registration->event_id) }}" 
                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-arrow-left mr-2"></i>Back to List
+                <i class="fas fa-arrow-left mr-2"></i>Back to Event
             </a>
         </div>
     </div>
@@ -66,6 +93,56 @@
                 </div>
             </div>
 
+            <!-- Innovation Theme & Category (for Innovation Events) -->
+            @if(!$registration->event->delivery_mode)
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50">
+                    <h2 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-lightbulb mr-2 text-purple-600"></i>Innovation Theme & Category
+                    </h2>
+                </div>
+                <div class="p-6">
+                    @if($registration->eventPaper)
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        @if($registration->eventPaper->title)
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Title</label>
+                            <div class="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg p-4 border-2 border-blue-200">
+                                <p class="text-gray-900 font-semibold text-lg">{{ $registration->eventPaper->title }}</p>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        @if($registration->eventPaper->product_theme)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Innovation Theme</label>
+                            <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-4 border-2 border-purple-200">
+                                <p class="text-gray-900 font-semibold">Theme {{ strtoupper($registration->eventPaper->product_theme) }}</p>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        @if($registration->eventPaper->product_category || $registration->eventPaper->paper_category)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <div class="bg-gradient-to-r from-indigo-100 to-blue-100 rounded-lg p-4 border-2 border-indigo-200">
+                                <p class="text-gray-900 font-semibold">{{ ucfirst($registration->eventPaper->product_category ?? $registration->eventPaper->paper_category) }}</p>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                    @else
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <p class="text-sm text-yellow-800">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            This participant hasn't submitted their innovation project yet.
+                        </p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
             <!-- Registration Details -->
             <div class="bg-white rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200">
@@ -86,20 +163,13 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Registration Role</label>
                             <div class="flex flex-wrap gap-2">
-                                @if($registration->role === 'both')
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                @if($registration->role === 'participant')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
                                         <i class="fas fa-user mr-2"></i>Participant
                                     </span>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                        <i class="fas fa-gavel mr-2"></i>Jury
-                                    </span>
-                                @elseif($registration->role === 'participant')
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                        <i class="fas fa-user mr-2"></i>Participant
-                                    </span>
-                                @elseif($registration->role === 'jury')
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                        <i class="fas fa-gavel mr-2"></i>Jury
+                                @elseif($registration->role === 'reviewer')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                        <i class="fas fa-user-graduate mr-2"></i>Reviewer
                                     </span>
                                 @else
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
@@ -108,6 +178,41 @@
                                 @endif
                             </div>
                         </div>
+
+                        <!-- Conference Categories (if applicable) -->
+                        @if($registration->selected_category)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Selected Conference Category</label>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                                <i class="fas fa-tag mr-2"></i>{{ $registration->selected_category }}
+                            </span>
+                        </div>
+                        @elseif($registration->event->conference_categories && count($registration->event->conference_categories) > 0)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Conference Categories (Event)</label>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($registration->event->conference_categories as $category)
+                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                                        {{ $category }}
+                                    </span>
+                                @endforeach
+                            </div>
+                            <p class="text-xs text-amber-600 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>User registered before category selection was implemented
+                            </p>
+                        </div>
+                        @endif
+
+                        <!-- Event Delivery Mode -->
+                        @if($registration->event->delivery_mode)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Event Delivery Mode</label>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                {{ ucfirst(str_replace('_', ' ', $registration->event->delivery_mode)) }}
+                            </span>
+                        </div>
+                        @endif
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Current Status</label>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
@@ -130,10 +235,80 @@
                                 {{ ucfirst($registration->payment_status) }}
                             </span>
                         </div>
+
+                        <!-- Registration Data (JSON) -->
+                        @if($registration->registration_data)
+                        @php
+                            $registrationData = json_decode($registration->registration_data, true) ?? [];
+                            $posterFields = array_filter($registrationData, function($value, $key) {
+                                return (str_contains(strtolower($key), 'poster') || 
+                                        str_contains(strtolower($key), 'image') || 
+                                        str_contains(strtolower($key), 'photo')) && 
+                                       !empty($value);
+                            }, ARRAY_FILTER_USE_BOTH);
+                            $otherFields = array_diff_key($registrationData, $posterFields);
+                        @endphp
+                        
+                        {{-- Display Poster/Images First --}}
+                        @if(!empty($posterFields))
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Innovation Project Poster/Images</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach($posterFields as $key => $value)
+                                    @if(filter_var($value, FILTER_VALIDATE_URL) || str_starts_with($value, 'storage/') || str_starts_with($value, '/storage/'))
+                                        <div class="border border-gray-200 rounded-lg overflow-hidden bg-white">
+                                            <div class="bg-gray-100 px-3 py-2 border-b">
+                                                <p class="text-sm font-medium text-gray-700">{{ ucfirst(str_replace('_', ' ', $key)) }}</p>
+                                            </div>
+                                            <div class="p-3">
+                                                <img src="{{ str_starts_with($value, 'http') ? $value : asset($value) }}" 
+                                                     alt="{{ ucfirst(str_replace('_', ' ', $key)) }}"
+                                                     class="w-full h-auto rounded cursor-pointer hover:opacity-90 transition"
+                                                     onclick="window.open(this.src, '_blank')">
+                                                <a href="{{ str_starts_with($value, 'http') ? $value : asset($value) }}" 
+                                                   target="_blank" 
+                                                   class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-800">
+                                                    <i class="fas fa-external-link-alt mr-1"></i>Open in New Tab
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                            <p class="text-sm font-medium text-gray-700 mb-1">{{ ucfirst(str_replace('_', ' ', $key)) }}</p>
+                                            <p class="text-sm text-gray-600">{{ $value }}</p>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+                        
+                        {{-- Display Other Registration Information --}}
+                        @if(!empty($otherFields))
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Additional Registration Information</label>
+                            <div class="bg-gray-50 rounded-lg p-4 space-y-2">
+                                @foreach($otherFields as $key => $value)
+                                    <div class="flex justify-between border-b border-gray-200 pb-2">
+                                        <span class="text-sm font-medium text-gray-700">{{ ucfirst(str_replace('_', ' ', $key)) }}:</span>
+                                        <span class="text-sm text-gray-900">{{ is_array($value) ? implode(', ', $value) : $value }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+                        @endif
+
                         @if($registration->amount_paid)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Amount Paid</label>
-                                <p class="text-gray-900 font-semibold">${{ number_format($registration->amount_paid, 2) }}</p>
+                                <p class="text-gray-900 font-semibold">RM {{ number_format($registration->amount_paid, 2) }}</p>
+                            </div>
+                        @endif
+                        @if($registration->payment_method)
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                                <p class="text-gray-900">{{ ucfirst($registration->payment_method) }}</p>
                             </div>
                         @endif
                         @if($registration->checked_in_at)
@@ -142,9 +317,120 @@
                                 <p class="text-gray-900">{{ \Carbon\Carbon::parse($registration->checked_in_at)->format('F j, Y \a\t g:i A') }}</p>
                             </div>
                         @endif
+
+                        <!-- Special Requirements -->
+                        @if($registration->special_requirements)
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Special Requirements</label>
+                            <p class="text-gray-900 bg-gray-50 p-3 rounded-lg">{{ $registration->special_requirements }}</p>
+                        </div>
+                        @endif
+
+                        <!-- Dietary Restrictions -->
+                        @if($registration->dietary_restrictions)
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Dietary Restrictions</label>
+                            <p class="text-gray-900 bg-gray-50 p-3 rounded-lg">{{ $registration->dietary_restrictions }}</p>
+                        </div>
+                        @endif
+
+                        <!-- Emergency Contact -->
+                        @if($registration->emergency_contact_name || $registration->emergency_contact_phone)
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+                            <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                                @if($registration->emergency_contact_name)
+                                    <p class="text-gray-900"><strong>Name:</strong> {{ $registration->emergency_contact_name }}</p>
+                                @endif
+                                @if($registration->emergency_contact_phone)
+                                    <p class="text-gray-900"><strong>Phone:</strong> {{ $registration->emergency_contact_phone }}</p>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
+
+            <!-- Event Paper/Poster (event_papers table) -->
+            @if($registration->eventPaper)
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+                    <h2 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-image mr-2 text-purple-600"></i>Innovation Project Poster
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <!-- Project Title -->
+                        @if($registration->eventPaper->title)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Project Title</label>
+                            <p class="text-gray-900 font-semibold text-lg">{{ $registration->eventPaper->title }}</p>
+                        </div>
+                        @endif
+
+                        <!-- Abstract -->
+                        @if($registration->eventPaper->abstract)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Abstract</label>
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <p class="text-gray-800 text-sm leading-relaxed whitespace-pre-line">{{ $registration->eventPaper->abstract }}</p>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- Poster Image -->
+                        @if($registration->eventPaper->poster_path)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Project Poster</label>
+                            @php
+                                // Check if poster_path is a full URL (Cloudinary) or local path
+                                $posterUrl = (str_starts_with($registration->eventPaper->poster_path, 'http://') || 
+                                              str_starts_with($registration->eventPaper->poster_path, 'https://'))
+                                    ? $registration->eventPaper->poster_path
+                                    : asset('storage/' . $registration->eventPaper->poster_path);
+                            @endphp
+                            <div class="border-2 border-purple-200 rounded-lg overflow-hidden bg-white shadow-lg">
+                                <img src="{{ $posterUrl }}" 
+                                     alt="Project Poster"
+                                     class="w-full h-auto cursor-pointer hover:opacity-95 transition"
+                                     onclick="window.open(this.src, '_blank')">
+                                <div class="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-t border-purple-200">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm text-gray-600">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Click image to view full size
+                                        </p>
+                                        <a href="{{ $posterUrl }}" 
+                                           target="_blank" 
+                                           download
+                                           class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition">
+                                            <i class="fas fa-download mr-2"></i>Download Poster
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        <!-- Status -->
+                        @if($registration->eventPaper->status)
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Submission Status</label>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                                @if($registration->eventPaper->status === 'accepted') bg-green-100 text-green-800
+                                @elseif($registration->eventPaper->status === 'rejected') bg-red-100 text-red-800
+                                @elseif($registration->eventPaper->status === 'under_review') bg-yellow-100 text-yellow-800
+                                @else bg-gray-100 text-gray-800 @endif">
+                                {{ ucfirst(str_replace('_', ' ', $registration->eventPaper->status)) }}
+                            </span>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Event Information -->
             <div class="bg-white rounded-lg shadow">
@@ -392,6 +678,43 @@
 
         <!-- Actions Sidebar -->
         <div class="lg:col-span-1 space-y-6">
+            <!-- Approval Actions (for pending registrations) -->
+            @if($registration->status === 'pending')
+            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-lg border-2 border-yellow-300">
+                <div class="px-6 py-4 border-b border-yellow-200 bg-yellow-100">
+                    <h2 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-exclamation-circle mr-2 text-yellow-600 animate-pulse"></i>Pending Approval
+                    </h2>
+                    <p class="text-sm text-gray-600 mt-1">Review and approve/reject this registration</p>
+                </div>
+                <div class="p-6 space-y-3">
+                    <!-- Approve Button -->
+                    <form method="POST" action="{{ route('organizer.registrations.update-status', $registration->id) }}" 
+                          onsubmit="return confirm('Are you sure you want to APPROVE this {{ $registration->role }} registration?');">
+                        @csrf
+                        <input type="hidden" name="status" value="confirmed">
+                        <button type="submit" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg flex items-center justify-center shadow-md hover:shadow-lg transition transform hover:scale-105">
+                            <i class="fas fa-check-circle mr-2 text-xl"></i>
+                            <span class="font-semibold">APPROVE {{ strtoupper($registration->role) }}</span>
+                        </button>
+                    </form>
+
+                    <!-- Reject Button -->
+                    <form method="POST" action="{{ route('organizer.registrations.update-status', $registration->id) }}"
+                          onsubmit="return confirm('Are you sure you want to REJECT this {{ $registration->role }} registration? This action will cancel their registration.');">
+                        @csrf
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" 
+                                class="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg flex items-center justify-center shadow-md hover:shadow-lg transition transform hover:scale-105">
+                            <i class="fas fa-times-circle mr-2 text-xl"></i>
+                            <span class="font-semibold">REJECT</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endif
+
             <!-- Quick Actions -->
             <div class="bg-white rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200">

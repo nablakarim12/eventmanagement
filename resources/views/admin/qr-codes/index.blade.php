@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
                     <i class="fas fa-qrcode text-xl"></i>
                 </div>
                 <div class="ml-4">
@@ -64,12 +64,12 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Search QR Codes</label>
                     <input type="text" name="search" value="{{ request('search') }}"
                            placeholder="Search by code, type, or event..."
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Event</label>
-                    <select name="event_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select name="event_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                         <option value="">All Events</option>
                         @foreach($events as $event)
                             <option value="{{ $event->id }}" {{ request('event_id') == $event->id ? 'selected' : '' }}>
@@ -81,7 +81,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                    <select name="type" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select name="type" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                         <option value="">All Types</option>
                         <option value="attendance" {{ request('type') === 'attendance' ? 'selected' : '' }}>Attendance</option>
                         <option value="registration" {{ request('type') === 'registration' ? 'selected' : '' }}>Registration</option>
@@ -91,7 +91,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select name="is_active" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select name="is_active" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                         <option value="">All Status</option>
                         <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Active</option>
                         <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Inactive</option>
@@ -99,7 +99,7 @@
                 </div>
                 
                 <div class="flex items-end">
-                    <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                         <i class="fas fa-search mr-2"></i>Filter
                     </button>
                 </div>
@@ -152,7 +152,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    @if($qrCode->type === 'attendance') bg-blue-100 text-blue-800
+                                    @if($qrCode->type === 'attendance') bg-indigo-100 text-indigo-800
                                     @elseif($qrCode->type === 'registration') bg-green-100 text-green-800
                                     @elseif($qrCode->type === 'access') bg-purple-100 text-purple-800
                                     @else bg-gray-100 text-gray-800
@@ -176,7 +176,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
                                     <a href="{{ route('admin.qr-codes.show', $qrCode) }}" 
-                                       class="text-blue-600 hover:text-blue-900" title="View Details">
+                                       class="text-indigo-600 hover:text-indigo-900" title="View Details">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <form action="{{ route('admin.qr-codes.destroy', $qrCode) }}" 

@@ -23,14 +23,14 @@
 @section('content')
 <div class="space-y-6">
     <!-- Scanner Instructions -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
         <div class="flex items-start">
             <div class="flex-shrink-0">
-                <i class="fas fa-info-circle text-blue-400 text-xl mt-0.5"></i>
+                <i class="fas fa-info-circle text-indigo-400 text-xl mt-0.5"></i>
             </div>
             <div class="ml-3">
-                <h3 class="text-sm font-medium text-blue-800">QR Code Scanner Instructions</h3>
-                <div class="mt-2 text-sm text-blue-700">
+                <h3 class="text-sm font-medium text-indigo-800">QR Code Scanner Instructions</h3>
+                <div class="mt-2 text-sm text-indigo-700">
                     <ul class="list-disc list-inside space-y-1">
                         <li>Allow camera access when prompted</li>
                         <li>Position QR code within the scanning area</li>
@@ -71,8 +71,8 @@
             <h4 class="text-sm font-medium text-gray-700 mb-2">Manual QR Code Entry</h4>
             <div class="flex space-x-2">
                 <input type="text" id="manualInput" placeholder="Enter QR code manually..."
-                       class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                <button id="processManual" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                       class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                <button id="processManual" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                     Process
                 </button>
             </div>
@@ -270,12 +270,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         ` : ''}
                         
                         ${result.user && !isLoading ? `
-                            <div class="mt-3 p-3 bg-blue-50 rounded">
-                                <h4 class="font-medium text-blue-800">Participant Information</h4>
-                                <p class="text-sm text-blue-600"><strong>Name:</strong> ${result.user.name}</p>
-                                <p class="text-sm text-blue-600"><strong>Email:</strong> ${result.user.email}</p>
+                            <div class="mt-3 p-3 bg-indigo-50 rounded">
+                                <h4 class="font-medium text-indigo-800">Participant Information</h4>
+                                <p class="text-sm text-indigo-600"><strong>Name:</strong> ${result.user.name}</p>
+                                <p class="text-sm text-indigo-600"><strong>Email:</strong> ${result.user.email}</p>
                                 ${result.attendance_action ? `
-                                    <p class="text-sm text-blue-600"><strong>Action:</strong> ${result.attendance_action.replace('_', ' ').toUpperCase()}</p>
+                                    <p class="text-sm text-indigo-600"><strong>Action:</strong> ${result.attendance_action.replace('_', ' ').toUpperCase()}</p>
                                 ` : ''}
                             </div>
                         ` : ''}

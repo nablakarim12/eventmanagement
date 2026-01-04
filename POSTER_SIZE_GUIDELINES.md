@@ -1,4 +1,4 @@
-# 🖼️ Event Poster Size Guidelines for EventSphere
+# 🖼️ Event Poster Size Guidelines for ConVex
 
 ## 📐 **Recommended Poster Dimensions**
 

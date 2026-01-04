@@ -68,7 +68,7 @@
             @foreach($events as $event)
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                     @if($event->featured_image)
-                        <img src="{{ asset('storage/' . $event->featured_image) }}" 
+                        <img src="{{ str_starts_with($event->featured_image, 'http') ? $event->featured_image : asset('storage/' . $event->featured_image) }}" 
                              alt="{{ $event->title }}" 
                              class="w-full h-48 object-cover"
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class EventRegistration extends Model
@@ -19,6 +20,7 @@ class EventRegistration extends Model
         'qr_code',
         'qr_image_path',
         'role', // participant, jury, both
+        'selected_category', // Conference category selected during registration
         // Jury qualification fields (nullable)
         'jury_qualification_summary',
         'jury_qualification_documents',
@@ -27,6 +29,15 @@ class EventRegistration extends Model
         'jury_institution',
         'jury_position',
         'jury_years_experience',
+        // Presentation fields
+        'presentation_status', // selected, rejected, pending_review
+        'presentation_queue',
+        'presentation_time',
+        'presentation_link',
+        'presentation_location',
+        'average_score',
+        'presentation_notified_at',
+        'rejection_reason',
         // Legacy certificate fields (for compatibility with friend's system)
         'certificate_path',
         'certificate_filename',
@@ -53,10 +64,13 @@ class EventRegistration extends Model
 
     protected $casts = [
         'amount_paid' => 'decimal:2',
+        'average_score' => 'decimal:2',
         'registration_data' => 'array',
         'jury_qualification_documents' => 'array',
         'jury_years_experience' => 'integer',
         'registered_at' => 'datetime',
+        'presentation_time' => 'datetime',
+        'presentation_notified_at' => 'datetime',
         'confirmed_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'attended_at' => 'datetime',
@@ -128,11 +142,59 @@ class EventRegistration extends Model
     }
 
     /**
+     * Get jury mappings (conference reviewer assignments) - when this registration is a reviewer
+     */
+    public function juryMappingsAsReviewer(): HasMany
+    {
+        return $this->hasMany(JuryMapping::class, 'jury_registration_id');
+    }
+
+    /**
+     * Get jury mappings - when this registration is a participant being reviewed
+     */
+    public function juryMappingsAsParticipant(): HasMany
+    {
+        return $this->hasMany(JuryMapping::class, 'participant_registration_id');
+    }
+
+    /**
      * Get paper reviews (if registered as jury)
      */
     public function paperReviews(): HasMany
     {
         return $this->hasMany(PaperReview::class, 'jury_registration_id');
+    }
+
+    /**
+     * Get generated certificates for this registration
+     */
+    public function generatedCertificates(): HasMany
+    {
+        return $this->hasMany(GeneratedCertificate::class, 'registration_id');
+    }
+
+    /**
+     * Get event paper (poster) for this registration (Innovation events)
+     */
+    public function eventPaper(): HasOne
+    {
+        return $this->hasOne(EventPaper::class, 'registration_id', 'id');
+    }
+
+    /**
+     * Get presentation attendance record
+     */
+    public function attendance(): HasOne
+    {
+        return $this->hasOne(EventAttendance::class, 'registration_id');
+    }
+
+    /**
+     * Get the feedback for this registration
+     */
+    public function feedback(): HasOne
+    {
+        return $this->hasOne(Feedback::class);
     }
 
     /**
@@ -156,7 +218,7 @@ class EventRegistration extends Model
      */
     public function scopeApproved($query)
     {
-        return $query->where('approval_status', 'approved');
+        return $query->whereNotNull('approved_at')->whereNull('rejected_at');
     }
 
     /**
@@ -164,7 +226,7 @@ class EventRegistration extends Model
      */
     public function scopePendingApproval($query)
     {
-        return $query->where('approval_status', 'pending');
+        return $query->whereNull('approved_at')->whereNull('rejected_at')->where('status', 'pending');
     }
 
     /**
@@ -204,7 +266,7 @@ class EventRegistration extends Model
      */
     public function isApproved(): bool
     {
-        return $this->approval_status === 'approved';
+        return !is_null($this->approved_at) && is_null($this->rejected_at);
     }
 
     /**
@@ -212,7 +274,7 @@ class EventRegistration extends Model
      */
     public function isPendingApproval(): bool
     {
-        return $this->approval_status === 'pending';
+        return is_null($this->approved_at) && is_null($this->rejected_at) && $this->status === 'pending';
     }
 
     /**
@@ -220,7 +282,7 @@ class EventRegistration extends Model
      */
     public function isRejected(): bool
     {
-        return $this->approval_status === 'rejected';
+        return !is_null($this->rejected_at);
     }
 
     /**
@@ -283,7 +345,6 @@ class EventRegistration extends Model
     public function approve($approvedBy = null)
     {
         $this->update([
-            'approval_status' => 'approved',
             'approved_at' => now(),
             'approved_by' => $approvedBy,
             'status' => 'confirmed', // Auto-confirm when approved
@@ -296,9 +357,9 @@ class EventRegistration extends Model
     public function reject($approvedBy = null)
     {
         $this->update([
-            'approval_status' => 'rejected',
             'rejected_at' => now(),
             'approved_by' => $approvedBy,
+            'status' => 'cancelled',
         ]);
     }
 

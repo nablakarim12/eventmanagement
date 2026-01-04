@@ -6,7 +6,7 @@
 @section('content')
 <div class="mb-6 flex justify-between items-center">
     <h2 class="text-xl font-semibold text-gray-800">Manage Categories</h2>
-    <a href="{{ route('admin.categories.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+    <a href="{{ route('admin.categories.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
         Add New Category
     </a>
 </div>
@@ -50,7 +50,7 @@
                     </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <a href="{{ route('admin.categories.edit', $category) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                    <a href="{{ route('admin.categories.edit', $category) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
                     <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
@@ -63,7 +63,7 @@
             @empty
             <tr>
                 <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                    No categories found. <a href="{{ route('admin.categories.create') }}" class="text-blue-600 hover:text-blue-900">Create one now</a>
+                    No categories found. <a href="{{ route('admin.categories.create') }}" class="text-indigo-600 hover:text-indigo-900">Create one now</a>
                 </td>
             </tr>
             @endforelse

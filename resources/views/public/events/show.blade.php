@@ -367,7 +367,7 @@
                         <div class="text-center">
                             <p class="text-xs text-gray-500">
                                 <i class="fas fa-shield-alt mr-1"></i>
-                                Secure registration powered by EventSphere
+                                Secure registration powered by ConVex
                             </p>
                         </div>
                     </div>

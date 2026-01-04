@@ -52,7 +52,7 @@ signupgo/app/Models/
 **Add these lines to your `signupgo/.env` file:**
 
 ```env
-# EventSphere Shared Database
+# ConVex Shared Database
 DB_CONNECTION=pgsql
 DB_HOST=aws-1-ap-southeast-1.pooler.supabase.com
 DB_PORT=6543

@@ -5,6 +5,64 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Conference Events - Presentation Check-In -->
+    @if(isset($conferenceEvents) && $conferenceEvents->isNotEmpty())
+    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg shadow-lg p-6 border border-purple-200 mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-calendar-check text-purple-600 mr-2"></i>
+                    Conference Events - Presentation Check-In
+                </h2>
+                <p class="text-sm text-gray-600 mt-1">Manage attendance and QR codes for conference presentations</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            @foreach($conferenceEvents as $confEvent)
+            <div class="bg-white rounded-lg shadow border border-gray-200 hover:shadow-md transition-shadow">
+                <div class="p-5">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-900 mb-1" title="{{ $confEvent->title }}">
+                                {{ Str::limit($confEvent->title, 40) }}
+                            </h3>
+                            <div class="flex items-center text-xs text-gray-500 space-x-3">
+                                <span class="flex items-center">
+                                    <i class="far fa-calendar mr-1"></i>
+                                    {{ $confEvent->start_date->format('M d, Y') }}
+                                </span>
+                                @if($confEvent->start_date->lte(now()) && $confEvent->end_date->gte(now()))
+                                    <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded-full font-medium">
+                                        <i class="fas fa-circle text-green-500 text-xs mr-1"></i>Ongoing
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full font-medium">
+                                        Scheduled
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-purple-50 rounded-lg p-3 mb-4">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Approved Presenters:</span>
+                            <span class="font-bold text-purple-700">{{ $confEvent->approved_presenters }}</span>
+                        </div>
+                    </div>
+                    
+                    <a href="{{ route('organizer.presentation-checkin.index', $confEvent) }}" 
+                       class="block w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-center py-2.5 rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all transform hover:scale-105 font-medium">
+                        <i class="fas fa-qrcode mr-2"></i>Generate QR & Check-In
+                    </a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+    
     <!-- Header -->
     <div class="mb-8">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">

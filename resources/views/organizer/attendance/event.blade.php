@@ -1,7 +1,7 @@
 @extends('organizer.layouts.app')
 
-@section('title', 'Event Attendance - ' . $event->title)
-@section('page-title', 'Event Attendance')
+@section('title', ($eventType ?? null ? ucfirst($eventType) . ' ' : '') . 'Event Attendance - ' . $event->title)
+@section('page-title', ($eventType ?? null ? ucfirst($eventType) . ' ' : '') . 'Event Attendance')
 
 @section('content')
 <div class="container mx-auto px-6 py-8">
@@ -73,7 +73,8 @@
             </p>
         </div>
 
-        <!-- Participants Checked In -->
+        @if($eventType !== 'innovation')
+        <!-- Participants Checked In (NOT shown for innovation events) -->
         <div class="bg-white rounded-lg shadow-lg p-6">
             <div class="flex items-center justify-between">
                 <div>
@@ -88,23 +89,28 @@
                 Out of {{ $totalParticipants }} approved participants
             </p>
         </div>
+        @endif
     </div>
 
     <!-- Navigation Tabs -->
     <div class="bg-white rounded-lg shadow-lg mb-6">
         <div class="border-b border-gray-200">
             <nav class="flex -mb-px">
+                @if($eventType !== 'innovation')
                 <button onclick="showTab('all')" id="tab-all" class="tab-button active px-6 py-4 text-sm font-medium border-b-2">
                     All Attendees ({{ $totalCheckedIn }})
                 </button>
-                <button onclick="showTab('jury')" id="tab-jury" class="tab-button px-6 py-4 text-sm font-medium border-b-2">
+                @endif
+                <button onclick="showTab('jury')" id="tab-jury" class="tab-button {{ $eventType === 'innovation' ? 'active' : '' }} px-6 py-4 text-sm font-medium border-b-2">
                     Jury ({{ $juryCheckedIn }})
                 </button>
+                @if($eventType !== 'innovation')
                 <button onclick="showTab('participants')" id="tab-participants" class="tab-button px-6 py-4 text-sm font-medium border-b-2">
                     Participants ({{ $participantsCheckedIn }})
                 </button>
+                @endif
                 <button onclick="showTab('not-checked-in')" id="tab-not-checked-in" class="tab-button px-6 py-4 text-sm font-medium border-b-2">
-                    Not Checked In ({{ $totalRegistrations - $totalCheckedIn }})
+                    Not Checked In ({{ $totalJury - $juryCheckedIn }})
                 </button>
             </nav>
         </div>
@@ -112,7 +118,8 @@
 
     <!-- Attendee Lists -->
     <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-        <!-- All Attendees -->
+        @if($eventType !== 'innovation')
+        <!-- All Attendees (NOT shown for innovation events) -->
         <div id="content-all" class="tab-content">
             <div class="p-6">
                 <h3 class="text-lg font-semibold mb-4">All Checked-In Attendees</h3>
@@ -161,9 +168,10 @@
                 @endif
             </div>
         </div>
+        @endif
 
         <!-- Jury Only -->
-        <div id="content-jury" class="tab-content hidden">
+        <div id="content-jury" class="tab-content {{ $eventType === 'innovation' ? '' : 'hidden' }}">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold">Checked-In Jury Members</h3>
@@ -218,7 +226,8 @@
             </div>
         </div>
 
-        <!-- Participants Only -->
+        @if($eventType !== 'innovation')
+        <!-- Participants Only (NOT shown for innovation events) -->
         <div id="content-participants" class="tab-content hidden">
             <div class="p-6">
                 <h3 class="text-lg font-semibold mb-4">Checked-In Participants</h3>
@@ -258,35 +267,21 @@
                 @endif
             </div>
         </div>
+        @endif
 
         <!-- Not Checked In -->
         <div id="content-not-checked-in" class="tab-content hidden">
             <div class="p-6">
-                <h3 class="text-lg font-semibold mb-4">Not Yet Checked In</h3>
-                @if($notCheckedIn->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registration Code</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($notCheckedIn as $registration)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $registration->user->name }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-600">{{ $registration->user->email }}</div>
-        <!-- Not Checked In -->
-        <div id="content-not-checked-in" class="tab-content hidden">
-            <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">Not Yet Checked In</h3>
+                    <div>
+                        <h3 class="text-lg font-semibold">{{ $eventType === 'innovation' ? 'Jury Not Checked In' : 'Not Yet Checked In' }}</h3>
+                        @if($eventType === 'innovation' && $notCheckedIn->count() > 0)
+                        <p class="text-sm text-red-600 mt-1">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            These jury members haven't checked in. Consider remapping their assignments.
+                        </p>
+                        @endif
+                    </div>
                     @if($notCheckedIn->count() > 0)
                         <button onclick="bulkCheckInAll()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm">
                             <i class="fas fa-check-double mr-2"></i>Check In All
@@ -306,13 +301,16 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                        @if($eventType === 'innovation')
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                        @endif
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registration Code</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach($notCheckedIn as $registration)
-                                    <tr>
+                                    <tr class="{{ $eventType === 'innovation' ? 'bg-red-50' : '' }}">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <input type="checkbox" name="registration_ids[]" value="{{ $registration->id }}" class="rounded registration-checkbox">
                                         </td>
@@ -330,13 +328,28 @@
                                                 {{ ucfirst($registration->role) }}
                                             </span>
                                         </td>
+                                        @if($eventType === 'innovation')
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                                Not Attended
+                                            </span>
+                                        </td>
+                                        @endif
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                             <code class="bg-gray-100 px-2 py-1 rounded">{{ $registration->registration_code }}</code>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <button type="button" onclick="quickCheckIn({{ $registration->id }}, '{{ $registration->user->name }}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
-                                                <i class="fas fa-check mr-1"></i>Check In
-                                            </button>
+                                            <div class="flex space-x-2">
+                                                <button type="button" onclick="quickCheckIn({{ $registration->id }}, '{{ $registration->user->name }}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm">
+                                                    <i class="fas fa-check mr-1"></i>Check In
+                                                </button>
+                                                @if($eventType === 'innovation')
+                                                <a href="{{ route('organizer.jury-mapping.index', $event) }}" class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm inline-flex items-center">
+                                                    <i class="fas fa-random mr-1"></i>Remap
+                                                </a>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -350,7 +363,7 @@
                         </div>
                     </form>
                 @else
-                    <p class="text-gray-500 text-center py-8">Everyone has checked in!</p>
+                    <p class="text-gray-500 text-center py-8">{{ $eventType === 'innovation' ? 'All jury members have checked in!' : 'Everyone has checked in!' }}</p>
                 @endif
             </div>
         </div>

@@ -18,9 +18,6 @@ return new class extends Migration
                 $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending')->after('status');
             }
         });
-        
-        // Update existing registrations to have default role if null
-        DB::statement("UPDATE event_registrations SET role = 'participant' WHERE role IS NULL");
     }
 
     /**

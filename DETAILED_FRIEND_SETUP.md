@@ -128,7 +128,7 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-#### 4c. Replace with EventSphere database credentials:
+#### 4c. Replace with ConVex database credentials:
 Replace those lines with:
 ```env
 DB_CONNECTION=pgsql

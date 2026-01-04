@@ -1,5 +1,5 @@
 @echo off
-echo EventSphere Database Export Script
+echo ConVex Database Export Script
 echo ====================================
 
 echo.

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - EventSphere</title>
+    <title>@yield('title', 'Dashboard') - ConVex</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -18,8 +18,8 @@
                     <!-- Logo -->
                     <div class="flex-shrink-0 flex items-center">
                         <a href="{{ route('dashboard') }}" class="flex items-center">
-                            <img src="https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=E" alt="EventSphere" class="h-8 w-8 rounded-lg">
-                            <span class="ml-2 text-xl font-bold text-gray-900">EventSphere</span>
+                            <img src="https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=C" alt="ConVex" class="h-8 w-8 rounded-lg">
+                            <span class="ml-2 text-xl font-bold text-gray-900">ConVex</span>
                         </a>
                     </div>
 
@@ -140,7 +140,7 @@
     <footer class="bg-white border-t border-gray-200 mt-12">
         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <div class="text-center text-sm text-gray-500">
-                <p>&copy; {{ date('Y') }} EventSphere. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} ConVex. All rights reserved.</p>
             </div>
         </div>
     </footer>

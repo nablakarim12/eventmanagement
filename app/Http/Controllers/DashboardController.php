@@ -58,12 +58,19 @@ class DashboardController extends Controller
             ->limit(3)
             ->get();
 
+        // Get user's certificates
+        $certificates = \App\Models\GeneratedCertificate::where('user_id', $user->id)
+            ->with('event')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('dashboard.index', compact(
             'totalRegistrations',
             'upcomingEvents', 
             'pastEvents',
             'recentRegistrations',
-            'upcomingRegisteredEvents'
+            'upcomingRegisteredEvents',
+            'certificates'
         ));
     }
 

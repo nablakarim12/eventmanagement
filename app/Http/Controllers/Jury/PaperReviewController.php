@@ -101,8 +101,21 @@ class PaperReviewController extends Controller
         }
 
         $assignment->load('paperSubmission.event', 'paperSubmission.authors');
+        
+        // Get active review criteria for this event
+        $criteria = $assignment->paperSubmission->event->reviewCriteria()->active()->get();
+        
+        // If no criteria set, use default ones
+        if ($criteria->isEmpty()) {
+            $criteria = collect([
+                (object)['id' => null, 'name' => 'originality', 'description' => 'Novelty and innovation', 'max_score' => 10, 'weight' => 1],
+                (object)['id' => null, 'name' => 'methodology', 'description' => 'Soundness of methods', 'max_score' => 10, 'weight' => 1],
+                (object)['id' => null, 'name' => 'clarity', 'description' => 'Quality of writing', 'max_score' => 10, 'weight' => 1],
+                (object)['id' => null, 'name' => 'contribution', 'description' => 'Significance to field', 'max_score' => 10, 'weight' => 1],
+            ]);
+        }
 
-        return view('jury.papers.review', compact('assignment', 'review'));
+        return view('jury.papers.review', compact('assignment', 'review', 'criteria'));
     }
 
     /**
@@ -116,33 +129,86 @@ class PaperReviewController extends Controller
             abort(403);
         }
 
-        $request->validate([
-            'originality_score' => 'required|numeric|min:1|max:10',
-            'methodology_score' => 'required|numeric|min:1|max:10',
-            'clarity_score' => 'required|numeric|min:1|max:10',
-            'contribution_score' => 'required|numeric|min:1|max:10',
+        // Get event criteria for dynamic validation
+        $criteria = $assignment->paperSubmission->event->reviewCriteria()->active()->get();
+        
+        // Build validation rules dynamically
+        $validationRules = [
             'strengths' => 'required|string',
             'weaknesses' => 'required|string',
             'comments' => 'nullable|string',
             'confidential_comments' => 'nullable|string',
             'recommendation' => 'required|in:accept,minor_revision,major_revision,reject',
             'save_as' => 'required|in:draft,submit',
-        ]);
-
-        $reviewData = [
-            'paper_submission_id' => $assignment->paper_submission_id,
-            'jury_assignment_id' => $assignment->id,
-            'jury_registration_id' => $assignment->jury_registration_id,
-            'originality_score' => $request->originality_score,
-            'methodology_score' => $request->methodology_score,
-            'clarity_score' => $request->clarity_score,
-            'contribution_score' => $request->contribution_score,
-            'strengths' => $request->strengths,
-            'weaknesses' => $request->weaknesses,
-            'comments' => $request->comments,
-            'confidential_comments' => $request->confidential_comments,
-            'recommendation' => $request->recommendation,
         ];
+        
+        // If custom criteria exist, validate them
+        if ($criteria->isNotEmpty()) {
+            foreach ($criteria as $criterion) {
+                $fieldName = 'score_' . $criterion->id;
+                $validationRules[$fieldName] = 'required|numeric|min:0|max:' . $criterion->max_score;
+            }
+        } else {
+            // Fallback to default criteria
+            $validationRules = array_merge($validationRules, [
+                'originality_score' => 'required|numeric|min:1|max:10',
+                'methodology_score' => 'required|numeric|min:1|max:10',
+                'clarity_score' => 'required|numeric|min:1|max:10',
+                'contribution_score' => 'required|numeric|min:1|max:10',
+            ]);
+        }
+
+        $request->validate($validationRules);
+
+        // Calculate overall score from criteria
+        $overallScore = 0;
+        $totalWeight = 0;
+        
+        if ($criteria->isNotEmpty()) {
+            foreach ($criteria as $criterion) {
+                $fieldName = 'score_' . $criterion->id;
+                $score = $request->input($fieldName);
+                $overallScore += $score * $criterion->weight;
+                $totalWeight += $criterion->weight;
+            }
+            $overallScore = $totalWeight > 0 ? $overallScore / $totalWeight : 0;
+            
+            // Store scores in JSON format for custom criteria
+            $scoresData = [];
+            foreach ($criteria as $criterion) {
+                $fieldName = 'score_' . $criterion->id;
+                $scoresData[$criterion->id] = $request->input($fieldName);
+            }
+            
+            $reviewData = [
+                'paper_submission_id' => $assignment->paper_submission_id,
+                'jury_assignment_id' => $assignment->id,
+                'jury_registration_id' => $assignment->jury_registration_id,
+                'custom_scores' => json_encode($scoresData),
+                'overall_score' => $overallScore,
+                'strengths' => $request->strengths,
+                'weaknesses' => $request->weaknesses,
+                'comments' => $request->comments,
+                'confidential_comments' => $request->confidential_comments,
+                'recommendation' => $request->recommendation,
+            ];
+        } else {
+            // Use default fields
+            $reviewData = [
+                'paper_submission_id' => $assignment->paper_submission_id,
+                'jury_assignment_id' => $assignment->id,
+                'jury_registration_id' => $assignment->jury_registration_id,
+                'originality_score' => $request->originality_score,
+                'methodology_score' => $request->methodology_score,
+                'clarity_score' => $request->clarity_score,
+                'contribution_score' => $request->contribution_score,
+                'strengths' => $request->strengths,
+                'weaknesses' => $request->weaknesses,
+                'comments' => $request->comments,
+                'confidential_comments' => $request->confidential_comments,
+                'recommendation' => $request->recommendation,
+            ];
+        }
 
         $review = PaperReview::updateOrCreate(
             ['jury_assignment_id' => $assignment->id],

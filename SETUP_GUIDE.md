@@ -1,8 +1,8 @@
-# EventSphere Project Setup Guide
+# ConVex Project Setup Guide
 
 ## For Collaborative Development
 
-This guide will help your teammate set up the EventSphere database and continue development on the user-facing features.
+This guide will help your teammate set up the ConVex database and continue development on the user-facing features.
 
 ## 🗄️ Database Sharing Options
 
@@ -53,19 +53,19 @@ This guide will help your teammate set up the EventSphere database and continue 
 **Create database dump:**
 ```bash
 # For PostgreSQL
-pg_dump --host=localhost --username=your_username --dbname=eventmanagement --file=eventsphere_dump.sql
+pg_dump --host=localhost --username=your_username --dbname=eventmanagement --file=convex_dump.sql
 
 # For MySQL
-mysqldump -u username -p eventmanagement > eventsphere_dump.sql
+mysqldump -u username -p eventmanagement > convex_dump.sql
 ```
 
 **Your teammate imports:**
 ```bash
 # PostgreSQL
-psql --host=localhost --username=username --dbname=eventmanagement < eventsphere_dump.sql
+psql --host=localhost --username=username --dbname=eventmanagement < convex_dump.sql
 
 # MySQL
-mysql -u username -p eventmanagement < eventsphere_dump.sql
+mysql -u username -p eventmanagement < convex_dump.sql
 ```
 
 ### Option 3: Shared Development Database

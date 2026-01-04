@@ -10,6 +10,8 @@ class ReviewCriteria extends Model
 {
     use HasFactory;
 
+    protected $table = 'review_criteria';
+
     protected $fillable = [
         'event_id',
         'name',

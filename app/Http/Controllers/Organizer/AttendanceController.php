@@ -23,58 +23,18 @@ class AttendanceController extends Controller
     {
         $organizer = Auth::guard('organizer')->user();
         
+        // ONLY show Innovation Competition events for jury attendance
         $events = Event::where('organizer_id', $organizer->id)
-            ->withCount(['attendance', 'registrations'])
+            ->whereHas('category', function($q) {
+                $q->where('name', 'Innovation Competition');
+            })
+            ->with(['registrations' => function($query) {
+                $query->where('status', 'confirmed');
+            }])
             ->latest()
             ->get();
-        
-        // Calculate statistics based on event_registrations.checked_in_at
-        $totalRegistrations = EventRegistration::whereHas('event', function($q) use ($organizer) {
-            $q->where('organizer_id', $organizer->id);
-        })->where('approval_status', 'approved')->count();
-        
-        $totalCheckedIn = EventRegistration::whereHas('event', function($q) use ($organizer) {
-            $q->where('organizer_id', $organizer->id);
-        })->where('approval_status', 'approved')
-          ->whereNotNull('checked_in_at')
-          ->count();
-        
-        $currentlyAttending = $totalCheckedIn; // Currently attending = checked in (no checkout tracking in registrations)
-        
-        $stats = [
-            'total_registered' => $totalRegistrations,
-            'checked_in' => $totalCheckedIn,
-            'currently_attending' => $currentlyAttending,
-        ];
-        
-        // Fetch checked-in registrations instead of event_attendance records
-        $query = EventRegistration::whereHas('event', function($q) use ($organizer) {
-            $q->where('organizer_id', $organizer->id);
-        })
-            ->whereNotNull('checked_in_at')
-            ->with(['user', 'event']);
-        
-        // Apply filters
-        if ($request->filled('event_id')) {
-            $query->where('event_id', $request->event_id);
-        }
-        
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('user', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
-        
-        if ($request->filled('date')) {
-            $date = $request->date;
-            $query->whereDate('checked_in_at', $date);
-        }
-        
-        $attendanceRecords = $query->latest('checked_in_at')->paginate(10)->withQueryString();
 
-        return view('organizer.attendance.index', compact('events', 'stats', 'attendanceRecords'));
+        return view('organizer.attendance.index', compact('events'));
     }
 
     public function event(Event $event)
@@ -84,10 +44,13 @@ class AttendanceController extends Controller
         if ($event->organizer_id !== $organizer->id) {
             abort(403);
         }
+        
+        // Determine event type based on category
+        $eventType = ($event->category && $event->category->name === 'Innovation Competition') ? 'innovation' : 'conference';
 
         // Get all registrations for this event (approved only)
         $allRegistrations = EventRegistration::where('event_id', $event->id)
-            ->where('approval_status', 'approved')
+            ->where('status', 'confirmed')
             ->with(['user', 'juryAssignments'])
             ->get();
 
@@ -109,7 +72,13 @@ class AttendanceController extends Controller
         $allCheckedIn = $allRegistrations->where('checked_in_at', '!=', null)->sortByDesc('checked_in_at');
         $juryOnly = $juryRegistrations->where('checked_in_at', '!=', null)->sortByDesc('checked_in_at');
         $participantsOnly = $participantRegistrations->where('checked_in_at', '!=', null)->sortByDesc('checked_in_at');
-        $notCheckedIn = $allRegistrations->where('checked_in_at', null);
+        
+        // For innovation events, only show jury in "Not Checked In" list
+        if ($eventType === 'innovation') {
+            $notCheckedIn = $juryRegistrations->where('checked_in_at', null);
+        } else {
+            $notCheckedIn = $allRegistrations->where('checked_in_at', null);
+        }
 
         return view('organizer.attendance.event', compact(
             'event',
@@ -122,7 +91,8 @@ class AttendanceController extends Controller
             'allCheckedIn',
             'juryOnly',
             'participantsOnly',
-            'notCheckedIn'
+            'notCheckedIn',
+            'eventType'
         ));
     }
 
@@ -143,11 +113,11 @@ class AttendanceController extends Controller
 
         $registration = EventRegistration::where('id', $request->registration_id)
             ->where('event_id', $event->id)
-            ->where('approval_status', 'approved')
+            ->where('status', 'confirmed')
             ->first();
 
         if (!$registration) {
-            return back()->with('error', 'Invalid registration or not approved.');
+            return back()->with('error', 'Invalid registration or not confirmed.');
         }
 
         if ($registration->checked_in_at) {
@@ -183,7 +153,7 @@ class AttendanceController extends Controller
         foreach ($request->registration_ids as $registrationId) {
             $registration = EventRegistration::where('id', $registrationId)
                 ->where('event_id', $event->id)
-                ->where('approval_status', 'approved')
+                ->where('status', 'confirmed')
                 ->first();
 
             if ($registration && !$registration->checked_in_at) {

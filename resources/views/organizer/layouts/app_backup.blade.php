@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Organizer Dashboard') - EventSphere</title>
+    <title>@yield('title', 'Organizer Dashboard') - ConVex</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
@@ -18,8 +18,8 @@
                 <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-2">
-                            <img src="{{ asset('assets/images/eventsphere-icon.svg') }}" alt="EventSphere" class="h-8 w-8">
-                            <h1 class="text-2xl font-bold text-gray-800">EventSphere - Organizer</h1>
+                            <img src="{{ asset('assets/images/eventsphere-icon.svg') }}" alt="ConVex" class="h-8 w-8">
+                            <h1 class="text-2xl font-bold text-gray-800">ConVex - Organizer</h1>
                         </div>
                         <nav class="hidden lg:flex space-x-6">
                             <a href="{{ route('organizer.dashboard') }}" 

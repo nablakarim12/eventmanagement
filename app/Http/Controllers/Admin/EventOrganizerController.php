@@ -66,6 +66,7 @@ class EventOrganizerController extends Controller
      */
     public function show(EventOrganizer $organizer)
     {
+        $organizer->load('documents');
         return view('admin.organizers.show', compact('organizer'));
     }
 

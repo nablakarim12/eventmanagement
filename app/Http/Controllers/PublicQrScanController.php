@@ -127,6 +127,18 @@ class PublicQrScanController extends Controller
                 ]);
             }
 
+            // For Innovation events, ONLY jury can check in (not participants)
+            $isInnovationEvent = $event->category && $event->category->name === 'Innovation Competition';
+            if ($isInnovationEvent) {
+                $isJury = in_array($registration->role, ['jury', 'both']);
+                if (!$isJury) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Only jury members can check in for Innovation Competition events. Participants do not need to check in.'
+                    ], 403);
+                }
+            }
+
             // Process attendance based on QR type
             $attendance = EventAttendance::where('event_id', $event->id)
                 ->where('user_id', $user->id)

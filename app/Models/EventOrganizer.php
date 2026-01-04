@@ -14,6 +14,7 @@ class EventOrganizer extends Authenticatable
     protected $fillable = [
         'org_name',
         'org_email',
+        'google_id',
         'password',
         'description',
         'phone',
@@ -50,7 +51,7 @@ class EventOrganizer extends Authenticatable
 
     public function documents()
     {
-        return $this->hasMany(OrganizerDocument::class);
+        return $this->hasMany(EventOrganizerDocument::class, 'event_organizer_id');
     }
 
     public function approvedBy()

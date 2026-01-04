@@ -84,7 +84,7 @@
                 Event Organizer</p>
                 
                 <p style="margin-top: 20px; font-size: 12px; color: #999;">
-                    This is an automated email from EventSphere. Please do not reply to this email.
+                    This is an automated email from ConVex. Please do not reply to this email.
                 </p>
             </div>
         </div>

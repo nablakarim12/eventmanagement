@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white rounded-lg shadow p-6">
             <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
                     <i class="fas fa-users text-xl"></i>
                 </div>
                 <div class="ml-4">
@@ -52,12 +52,12 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Search Attendees</label>
                     <input type="text" name="search" value="{{ request('search') }}"
                            placeholder="Search by name, email, or event..."
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Event</label>
-                    <select name="event_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <select name="event_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                         <option value="">All Events</option>
                         @foreach($events as $event)
                             <option value="{{ $event->id }}" {{ request('event_id') == $event->id ? 'selected' : '' }}>
@@ -70,19 +70,19 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Date From</label>
                     <input type="date" name="date_from" value="{{ request('date_from') }}"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Date To</label>
                     <input type="date" name="date_to" value="{{ request('date_to') }}"
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 </div>
             </div>
             
             <div class="flex justify-between items-center">
                 <div class="flex space-x-2">
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                         <i class="fas fa-search mr-2"></i>Filter
                     </button>
                     
@@ -158,12 +158,12 @@
                                     @php
                                         $duration = now()->diffInMinutes($attendance->checked_in_at);
                                     @endphp
-                                    <span class="text-sm text-blue-600">{{ $duration }} min (ongoing)</span>
+                                    <span class="text-sm text-indigo-600">{{ $duration }} min (ongoing)</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    @if($attendance->check_in_method === 'qr_scan') bg-blue-100 text-blue-800
+                                    @if($attendance->check_in_method === 'qr_scan') bg-indigo-100 text-indigo-800
                                     @elseif($attendance->check_in_method === 'manual') bg-green-100 text-green-800
                                     @else bg-gray-100 text-gray-800
                                     @endif">

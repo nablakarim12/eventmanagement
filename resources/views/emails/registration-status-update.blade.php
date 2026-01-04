@@ -81,7 +81,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1 style="margin: 0; font-size: 24px;">EventSphere</h1>
+            <h1 style="margin: 0; font-size: 24px;">ConVex</h1>
             <p style="margin: 10px 0 0 0; opacity: 0.9;">Registration Status Update</p>
         </div>
 

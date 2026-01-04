@@ -157,6 +157,118 @@
                 </div>
             </div>
 
+            <!-- Conference-Specific Fields (Show only for Academic Conference) -->
+            <div id="conference-fields" class="mt-8 border-t pt-6" style="display: none;">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-file-alt mr-2 text-blue-600"></i>
+                    Paper Submission Settings (Academic Conference)
+                </h3>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-blue-800">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        For Academic Conferences, participants can submit research papers. Configure the submission deadline and requirements below.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Column -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Paper Submission Deadline:</label>
+                            <input type="date" 
+                                   name="paper_submission_deadline" 
+                                   id="paper_submission_deadline"
+                                   value="{{ old('paper_submission_deadline') }}" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+                            <p class="text-sm text-gray-600 mt-1">Last date for participants to submit research papers</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Abstract Word Count:</label>
+                            <input type="number" 
+                                   name="min_abstract_words" 
+                                   value="{{ old('min_abstract_words', '200') }}" 
+                                   min="50" 
+                                   max="1000"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+                            <p class="text-sm text-gray-600 mt-1">Recommended: 200-300 words</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Keywords Required:</label>
+                            <input type="number" 
+                                   name="min_keywords" 
+                                   value="{{ old('min_keywords', '3') }}" 
+                                   min="1" 
+                                   max="10"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+                            <p class="text-sm text-gray-600 mt-1">Recommended: 3-5 keywords</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Maximum Paper File Size (MB):</label>
+                            <input type="number" 
+                                   name="max_paper_size_mb" 
+                                   value="{{ old('max_paper_size_mb', '10') }}" 
+                                   min="1" 
+                                   max="50"
+                                   step="1"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+                            <p class="text-sm text-gray-600 mt-1">Recommended: 10MB maximum</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Paper Format Guidelines:</label>
+                            <textarea name="paper_format_guidelines" 
+                                      rows="4" 
+                                      class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 resize-none" 
+                                      placeholder="Example: Papers must be in IEEE format, 8-12 pages, Times New Roman 10pt...">{{ old('paper_format_guidelines') }}</textarea>
+                            <p class="text-sm text-gray-600 mt-1">Provide formatting instructions for paper submissions</p>
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" 
+                                   name="allow_multiple_submissions" 
+                                   id="allow_multiple_submissions"
+                                   value="1"
+                                   {{ old('allow_multiple_submissions') ? 'checked' : '' }}
+                                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="allow_multiple_submissions" class="ml-2 block text-sm text-gray-700">
+                                Allow participants to submit multiple papers
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Settings -->
+                <div class="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <h4 class="font-medium text-gray-800 mb-3">Reviewer Requirements</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Reviewers per Paper:</label>
+                            <input type="number" 
+                                   name="min_reviewers_per_paper" 
+                                   value="{{ old('min_reviewers_per_paper', '2') }}" 
+                                   min="1" 
+                                   max="10"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Review Deadline:</label>
+                            <input type="date" 
+                                   name="review_deadline" 
+                                   id="review_deadline"
+                                   value="{{ old('review_deadline') }}" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Submit Button -->
             <div class="mt-8 text-center">
                 <button type="submit" name="status" value="published" class="bg-green-600 hover:bg-green-700 text-white px-12 py-3 rounded text-lg font-medium transition-colors">Submit</button>
@@ -167,6 +279,72 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Category-based field visibility
+    const categorySelect = document.querySelector('select[name="category_id"]');
+    const conferenceFields = document.getElementById('conference-fields');
+    const paperDeadlineInput = document.getElementById('paper_submission_deadline');
+    const reviewDeadlineInput = document.getElementById('review_deadline');
+    const registrationDeadlineInput = document.querySelector('input[name="registration_deadline"]');
+    const startDateInput = document.querySelector('input[name="start_date"]');
+
+    // Category names from database
+    const conferenceCategories = ['Academic Conference', 'Conference']; // Add any conference-related category names
+    
+    function toggleConferenceFields() {
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const categoryName = selectedOption.text;
+        
+        if (conferenceCategories.some(cat => categoryName.includes(cat))) {
+            conferenceFields.style.display = 'block';
+            // Make paper submission deadline required for conferences
+            if (paperDeadlineInput) {
+                paperDeadlineInput.setAttribute('required', 'required');
+            }
+        } else {
+            conferenceFields.style.display = 'none';
+            // Remove required attribute for non-conferences
+            if (paperDeadlineInput) {
+                paperDeadlineInput.removeAttribute('required');
+            }
+        }
+    }
+
+    // Set deadline constraints
+    function updateDeadlineConstraints() {
+        const today = new Date().toISOString().slice(0, 10);
+        
+        // Paper submission deadline should be before start date
+        if (paperDeadlineInput && startDateInput.value) {
+            paperDeadlineInput.max = startDateInput.value;
+            paperDeadlineInput.min = today;
+        }
+        
+        // Review deadline should be after paper deadline and before start date
+        if (reviewDeadlineInput && paperDeadlineInput.value) {
+            reviewDeadlineInput.min = paperDeadlineInput.value;
+            if (startDateInput.value) {
+                reviewDeadlineInput.max = startDateInput.value;
+            }
+        }
+    }
+
+    if (categorySelect) {
+        categorySelect.addEventListener('change', toggleConferenceFields);
+        // Check on page load (for old values)
+        toggleConferenceFields();
+    }
+
+    // Update constraints when dates change
+    if (startDateInput) {
+        startDateInput.addEventListener('change', updateDeadlineConstraints);
+    }
+    if (paperDeadlineInput) {
+        paperDeadlineInput.addEventListener('change', updateDeadlineConstraints);
+    }
+    if (registrationDeadlineInput) {
+        registrationDeadlineInput.addEventListener('change', updateDeadlineConstraints);
+    }
+
     // Image upload and preview functionality
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('featured_image');

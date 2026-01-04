@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - EventSphere</title>
+    <title>Login - ConVex</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -13,7 +13,7 @@
             <!-- Logo and Header -->
             <div>
                 <div class="mx-auto h-12 w-auto flex items-center justify-center">
-                    <img src="https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=E" alt="EventSphere" class="h-10 w-10 rounded-lg">
+                    <img src="https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=C" alt="ConVex" class="h-10 w-10 rounded-lg">
                     <span class="ml-3 text-2xl font-bold text-gray-900">EventSphere</span>
                 </div>
                 <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">

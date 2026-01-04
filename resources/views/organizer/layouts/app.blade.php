@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Organizer Dashboard') - EventSphere</title>
+    <title>@yield('title', 'Organizer Dashboard') - ConVex</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -14,82 +14,175 @@
     </style>
     @yield('styles')
 </head>
-<body class="bg-gray-50" x-data="{ sidebarOpen: true }">
+<body class="bg-gray-50" x-data="{ 
+    sidebarOpen: true, 
+    myEventsDropdownOpen: false,
+    innovationDropdownOpen: {{ request()->input('type') === 'innovation' || request()->is('organizer/registrations*') && request()->input('type') === 'innovation' ? 'true' : 'false' }},
+    conferenceDropdownOpen: {{ request()->input('type') === 'conference' || request()->is('organizer/registrations*') && request()->input('type') === 'conference' ? 'true' : 'false' }}
+}" x-init="
+    // Keep Innovation dropdown open if on any innovation-related page
+    if (window.location.search.includes('type=innovation')) {
+        innovationDropdownOpen = true;
+    }
+    // Keep Conference dropdown open if on any conference-related page
+    if (window.location.search.includes('type=conference')) {
+        conferenceDropdownOpen = true;
+    }
+">
     <div class="min-h-screen flex">
-        <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg transition-all duration-300 ease-in-out" 
-             :class="sidebarOpen ? 'block' : 'hidden'"
+        <!-- Main Sidebar -->
+        <div class="bg-white shadow-lg transition-all duration-300 ease-in-out w-64" 
              x-show="sidebarOpen">
-            <div class="flex items-center justify-center h-16 px-4 border-b">
-                <a href="{{ route('organizer.dashboard') }}" class="flex items-center space-x-2 hover:opacity-80 transition-opacity {{ request()->routeIs('organizer.dashboard') ? 'bg-indigo-50 rounded-lg px-3 py-2' : '' }}">
-                    <i class="fas fa-home text-2xl {{ request()->routeIs('organizer.dashboard') ? 'text-indigo-600' : 'text-indigo-600' }}"></i>
-                    <h1 class="text-xl font-bold {{ request()->routeIs('organizer.dashboard') ? 'text-indigo-700' : 'text-gray-900' }}">EventSphere</h1>
+            <div class="flex items-center justify-start h-16 px-4 border-b">
+                <a href="{{ route('organizer.dashboard') }}" 
+                   class="hover:opacity-80 transition-opacity ml-4">
+                    <img src="{{ asset('assets/images/logomain.png') }}" alt="ConVex Logo" class="h-10 w-auto">
                 </a>
             </div>
 
             <nav class="mt-5 px-2">
                 <div class="space-y-1">
-                    <a href="{{ route('organizer.events.index') }}" class="{{ request()->routeIs('organizer.events.index') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <!-- My Events -->
+                    <a href="{{ route('organizer.events.index') }}" 
+                       class="{{ request()->routeIs('organizer.events.index') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <i class="fas fa-calendar-check mr-3 {{ request()->routeIs('organizer.events.index') ? 'text-indigo-500' : '' }}"></i>
-                        My Events
+                        <span>My Events</span>
                     </a>
-                    <a href="{{ route('organizer.events.create') }}" class="{{ request()->routeIs('organizer.events.create') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-plus-circle mr-3 {{ request()->routeIs('organizer.events.create') ? 'text-indigo-500' : '' }}"></i>
-                        Create Event
-                    </a>
-                    <a href="{{ route('organizer.registrations.index') }}" class="{{ request()->routeIs('organizer.registrations.*') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-users mr-3 {{ request()->routeIs('organizer.registrations.*') ? 'text-indigo-500' : '' }}"></i>
-                        Registrations
-                    </a>
-                    
-                    <!-- Advanced Features Section -->
-                    <div class="mt-4 mb-2">
-                        <h3 class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Advanced Features</h3>
+
+                    <!-- Innovation Dropdown -->
+                    <div>
+                        <button @click="innovationDropdownOpen = !innovationDropdownOpen" 
+                                class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between w-full px-2 py-2 text-sm font-medium rounded-md">
+                            <div class="flex items-center">
+                                <i class="fas fa-lightbulb mr-3"></i>
+                                <span>Innovation</span>
+                            </div>
+                            <i class="fas fa-chevron-down transition-transform" 
+                               :class="innovationDropdownOpen ? 'rotate-180' : ''"></i>
+                        </button>
+                        <div x-show="innovationDropdownOpen" 
+                             x-cloak 
+                             class="ml-8 mt-1 space-y-1">
+                            <a href="{{ route('organizer.registrations.index') }}?type=innovation" 
+                               class="{{ request()->routeIs('organizer.registrations.*') && request()->input('type') === 'innovation' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-users mr-2 text-xs {{ request()->routeIs('organizer.registrations.*') && request()->input('type') === 'innovation' ? 'text-indigo-600' : '' }}"></i>
+                                Registration
+                            </a>
+                            <a href="{{ route('organizer.payment-verification.index', ['type' => 'innovation']) }}" 
+                               class="{{ request()->routeIs('organizer.payment-verification.*') && request()->input('type') === 'innovation' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-credit-card mr-2 text-xs {{ request()->routeIs('organizer.payment-verification.*') && request()->input('type') === 'innovation' ? 'text-indigo-600' : '' }}"></i>
+                                Payment
+                            </a>
+                            <a href="{{ route('organizer.jury-mapping.index') }}?type=innovation" 
+                               class="{{ request()->routeIs('organizer.jury-mapping.*') && request()->input('type') === 'innovation' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-user-tie mr-2 text-xs {{ request()->routeIs('organizer.jury-mapping.*') && request()->input('type') === 'innovation' ? 'text-indigo-600' : '' }}"></i>
+                                Jury Mapping
+                            </a>
+                            <a href="{{ route('organizer.attendance.index') }}?type=innovation" 
+                               class="{{ request()->routeIs('organizer.attendance.*') && request()->input('type') === 'innovation' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-clipboard-check mr-2 text-xs {{ request()->routeIs('organizer.attendance.*') && request()->input('type') === 'innovation' ? 'text-indigo-600' : '' }}"></i>
+                                Attendance & QR Codes
+                            </a>
+                            <a href="{{ route('organizer.evaluation-results.index') }}?type=innovation" 
+                               class="{{ request()->routeIs('organizer.evaluation-results.*') && request()->input('type') === 'innovation' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-chart-bar mr-2 text-xs {{ request()->routeIs('organizer.evaluation-results.*') && request()->input('type') === 'innovation' ? 'text-indigo-600' : '' }}"></i>
+                                Evaluation Result
+                            </a>
+                            <a href="{{ route('organizer.simple-certificates.index') }}?type=innovation" 
+                               class="{{ request()->routeIs('organizer.simple-certificates.*') && request()->input('type') === 'innovation' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-certificate mr-2 text-xs {{ request()->routeIs('organizer.simple-certificates.*') && request()->input('type') === 'innovation' ? 'text-indigo-600' : '' }}"></i>
+                                Certificate
+                            </a>
+                            <a href="{{ route('organizer.feedback.index') }}?type=innovation" 
+                               class="{{ request()->routeIs('organizer.feedback.*') && request()->input('type') === 'innovation' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-comment-dots mr-2 text-xs {{ request()->routeIs('organizer.feedback.*') && request()->input('type') === 'innovation' ? 'text-indigo-600' : '' }}"></i>
+                                Feedback
+                            </a>
+                        </div>
                     </div>
-                    <a href="{{ route('organizer.materials.index') }}" class="{{ request()->routeIs('organizer.materials.*') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-file-alt mr-3 {{ request()->routeIs('organizer.materials.*') ? 'text-indigo-500' : '' }}"></i>
-                        Event Materials
-                    </a>
-                    <a href="{{ route('organizer.attendance.index') }}" class="{{ request()->routeIs('organizer.attendance.index') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-clipboard-list mr-3 {{ request()->routeIs('organizer.attendance.index') ? 'text-indigo-500' : '' }}"></i>
-                        Attendance
-                    </a>
-                    <a href="{{ route('organizer.qr-codes.index') }}" class="{{ request()->routeIs('organizer.qr-codes.*') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-qrcode mr-3 {{ request()->routeIs('organizer.qr-codes.*') ? 'text-indigo-500' : '' }}"></i>
-                        QR Codes
-                    </a>
-                    <a href="{{ route('organizer.certificates.index') }}" class="{{ request()->routeIs('organizer.certificates.*') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-certificate mr-3 {{ request()->routeIs('organizer.certificates.*') ? 'text-indigo-500' : '' }}"></i>
-                        Certificates
-                    </a>
-                    <a href="{{ route('organizer.jury-mapping.index') }}" class="{{ request()->routeIs('organizer.jury-mapping.*') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-user-tie mr-3 {{ request()->routeIs('organizer.jury-mapping.*') ? 'text-indigo-500' : '' }}"></i>
-                        Jury Mapping
-                    </a>
-                    <a href="{{ route('organizer.attendance.scanner') }}" class="{{ request()->routeIs('organizer.attendance.scanner') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <i class="fas fa-camera mr-3 {{ request()->routeIs('organizer.attendance.scanner') ? 'text-indigo-500' : '' }}"></i>
-                        QR Scanner
+
+                    <!-- Conference Dropdown -->
+                    <div>
+                        <button @click="conferenceDropdownOpen = !conferenceDropdownOpen" 
+                                class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center justify-between w-full px-2 py-2 text-sm font-medium rounded-md">
+                            <div class="flex items-center">
+                                <i class="fas fa-building mr-3"></i>
+                                <span>Conference</span>
+                            </div>
+                            <i class="fas fa-chevron-down transition-transform" 
+                               :class="conferenceDropdownOpen ? 'rotate-180' : ''"></i>
+                        </button>
+                        <div x-show="conferenceDropdownOpen" 
+                             x-cloak 
+                             class="ml-8 mt-1 space-y-1">
+                            <a href="{{ route('organizer.registrations.index') }}?type=conference" 
+                               class="{{ request()->routeIs('organizer.registrations.*') && request()->input('type') === 'conference' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-users mr-2 text-xs {{ request()->routeIs('organizer.registrations.*') && request()->input('type') === 'conference' ? 'text-indigo-600' : '' }}"></i>
+                                Registration
+                            </a>
+                            <a href="{{ route('organizer.jury-mapping.index') }}?type=conference" 
+                               class="{{ request()->routeIs('organizer.jury-mapping.*') && request()->input('type') === 'conference' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-user-tie mr-2 text-xs {{ request()->routeIs('organizer.jury-mapping.*') && request()->input('type') === 'conference' ? 'text-indigo-600' : '' }}"></i>
+                                Jury Mapping
+                            </a>
+                            <a href="{{ route('organizer.payment-verification.index', ['type' => 'conference']) }}" 
+                               class="{{ request()->routeIs('organizer.payment-verification.*') && request()->input('type') === 'conference' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-credit-card mr-2 text-xs {{ request()->routeIs('organizer.payment-verification.*') && request()->input('type') === 'conference' ? 'text-indigo-600' : '' }}"></i>
+                                Payment
+                            </a>
+                            <a href="{{ route('organizer.evaluation-results.index') }}?type=conference" 
+                               class="{{ request()->routeIs('organizer.evaluation-results.*') && request()->input('type') === 'conference' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-chart-bar mr-2 text-xs {{ request()->routeIs('organizer.evaluation-results.*') && request()->input('type') === 'conference' ? 'text-indigo-600' : '' }}"></i>
+                                Evaluation Result
+                            </a>
+                            <a href="{{ route('organizer.attendance.index') }}?type=conference" 
+                               class="{{ request()->routeIs('organizer.attendance.*') && request()->input('type') === 'conference' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-clipboard-check mr-2 text-xs {{ request()->routeIs('organizer.attendance.*') && request()->input('type') === 'conference' ? 'text-indigo-600' : '' }}"></i>
+                                Attendance & QR Codes
+                            </a>
+                            <a href="{{ route('organizer.simple-certificates.index') }}?type=conference" 
+                               class="{{ request()->routeIs('organizer.simple-certificates.*') && request()->input('type') === 'conference' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-certificate mr-2 text-xs {{ request()->routeIs('organizer.simple-certificates.*') && request()->input('type') === 'conference' ? 'text-indigo-600' : '' }}"></i>
+                                Certificates
+                            </a>
+                            <a href="{{ route('organizer.feedback.index') }}?type=conference" 
+                               class="{{ request()->routeIs('organizer.feedback.*') && request()->input('type') === 'conference' ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-600' }} hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-xs rounded-md">
+                                <i class="fas fa-comment-dots mr-2 text-xs {{ request()->routeIs('organizer.feedback.*') && request()->input('type') === 'conference' ? 'text-indigo-600' : '' }}"></i>
+                                Feedback
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Create Event -->
+                    <a href="{{ route('organizer.events.create') }}" 
+                       class="{{ request()->routeIs('organizer.events.create') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                        <i class="fas fa-plus-circle mr-3 {{ request()->routeIs('organizer.events.create') ? 'text-indigo-500' : '' }}"></i>
+                        <span>Create Event</span>
                     </a>
                     
-                    <!-- Other Features -->
+                    <!-- Analytics & More Section -->
                     <div class="mt-4 mb-2">
                         <h3 class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Analytics & More</h3>
                     </div>
-                    <a href="{{ route('organizer.analytics.index') }}" class="{{ request()->routeIs('organizer.analytics.*') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <a href="{{ route('organizer.analytics.index') }}" 
+                       class="{{ request()->routeIs('organizer.analytics.*') ? 'bg-indigo-50 border-r-4 border-indigo-500 text-indigo-700' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }} group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <i class="fas fa-chart-line mr-3 {{ request()->routeIs('organizer.analytics.*') ? 'text-indigo-500' : '' }}"></i>
-                        Analytics
+                        <span>Analytics</span>
                     </a>
-                    <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <a href="#" 
+                       class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <i class="fas fa-dollar-sign mr-3"></i>
-                        Revenue
+                        <span>Revenue</span>
                     </a>
-                    <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <a href="#" 
+                       class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <i class="fas fa-envelope mr-3"></i>
-                        Communications
+                        <span>Communications</span>
                     </a>
-                    <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                    <a href="#" 
+                       class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
                         <i class="fas fa-cog mr-3"></i>
-                        Settings
+                        <span>Settings</span>
                     </a>
                 </div>
             </nav>
@@ -183,5 +276,6 @@
     </div>
 
     @yield('scripts')
+    @stack('scripts')
 </body>
 </html>

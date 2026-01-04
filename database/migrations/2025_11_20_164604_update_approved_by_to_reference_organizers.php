@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('event_registrations', function (Blueprint $table) {
-            // Add approved_by column if it doesn't exist, referencing organizers
+            // Add approved_by column if it doesn't exist, referencing event_organizers
             if (!Schema::hasColumn('event_registrations', 'approved_by')) {
                 $table->unsignedBigInteger('approved_by')->nullable()->after('rejected_at');
-                $table->foreign('approved_by')->references('id')->on('organizers')->onDelete('set null');
+                $table->foreign('approved_by')->references('id')->on('event_organizers')->onDelete('set null');
             }
         });
     }

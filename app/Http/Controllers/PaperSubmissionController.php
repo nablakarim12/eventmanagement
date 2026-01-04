@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Models\PaperSubmission;
 use App\Models\PaperAuthor;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,9 +14,12 @@ use Illuminate\Support\Str;
 
 class PaperSubmissionController extends Controller
 {
-    public function __construct()
+    protected $cloudinaryService;
+
+    public function __construct(CloudinaryService $cloudinaryService)
     {
         $this->middleware('auth');
+        $this->cloudinaryService = $cloudinaryService;
     }
 
     /**
@@ -79,10 +83,15 @@ class PaperSubmissionController extends Controller
             return back()->with('error', 'Invalid registration.');
         }
 
-        // Upload paper file
+        // Upload paper file to Cloudinary
         $file = $request->file('paper_file');
-        $filename = Str::slug($request->title) . '_' . time() . '.pdf';
-        $path = $file->storeAs('papers', $filename, 'public');
+        $uploadResult = $this->cloudinaryService->uploadPdf(
+            $file,
+            'papers/' . date('Y/m'),
+            [
+                'public_id' => 'paper_' . $event->id . '_' . $user->id . '_' . time(),
+            ]
+        );
 
         // Create paper submission
         $submission = PaperSubmission::create([
@@ -92,7 +101,8 @@ class PaperSubmissionController extends Controller
             'title' => $request->title,
             'abstract' => $request->abstract,
             'keywords' => $request->keywords,
-            'paper_file_path' => $path,
+            'paper_file_path' => $uploadResult['secure_url'],
+            'file_public_id' => $uploadResult['public_id'],
             'paper_file_name' => $file->getClientOriginalName(),
             'file_size' => $file->getSize(),
             'status' => 'submitted',

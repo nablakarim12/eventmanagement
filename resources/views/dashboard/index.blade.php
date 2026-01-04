@@ -11,7 +11,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <!-- Total Registrations -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
             <div class="p-5">
@@ -57,6 +57,23 @@
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Past Events</dt>
                             <dd class="text-lg font-medium text-gray-900">{{ $pastEvents }}</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Certificates -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-certificate text-yellow-600 text-2xl"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">My Certificates</dt>
+                            <dd class="text-lg font-medium text-gray-900">{{ $certificates->count() }}</dd>
                         </dl>
                     </div>
                 </div>
@@ -177,6 +194,73 @@
             </div>
         </div>
     </div>
+
+    <!-- My Certificates Section -->
+    @if($certificates->count() > 0)
+    <div class="mt-8 bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-gray-900">🎓 My Certificates</h2>
+            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                {{ $certificates->count() }} {{ $certificates->count() === 1 ? 'Certificate' : 'Certificates' }}
+            </span>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($certificates as $certificate)
+                    <div class="border-2 border-yellow-200 rounded-lg overflow-hidden hover:border-yellow-400 hover:shadow-lg transition-all">
+                        <!-- Certificate Header -->
+                        <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 p-4 text-white">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-semibold uppercase tracking-wide">
+                                    {{ ucfirst($certificate->certificate_type) }}
+                                </span>
+                                @if($certificate->award_name)
+                                    <span class="bg-white text-yellow-700 px-2 py-1 rounded-full text-xs font-bold">
+                                        🏆 {{ $certificate->award_name }}
+                                    </span>
+                                @endif
+                            </div>
+                            <h3 class="font-bold text-lg leading-tight">{{ $certificate->event_name }}</h3>
+                        </div>
+
+                        <!-- Certificate Body -->
+                        <div class="p-4 bg-white">
+                            <div class="space-y-2 mb-4">
+                                <p class="text-sm text-gray-600">
+                                    <i class="fas fa-user text-gray-400 mr-2"></i>
+                                    <strong>Name:</strong> {{ $certificate->participant_name }}
+                                </p>
+                                @if($certificate->project_name)
+                                    <p class="text-sm text-gray-600">
+                                        <i class="fas fa-project-diagram text-gray-400 mr-2"></i>
+                                        <strong>Project:</strong> {{ Str::limit($certificate->project_name, 40) }}
+                                    </p>
+                                @endif
+                                @if($certificate->event_date)
+                                    <p class="text-sm text-gray-600">
+                                        <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                                        {{ \Carbon\Carbon::parse($certificate->event_date)->format('F j, Y') }}
+                                    </p>
+                                @endif
+                                <p class="text-sm text-gray-600">
+                                    <i class="fas fa-clock text-gray-400 mr-2"></i>
+                                    <strong>Issued:</strong> {{ $certificate->created_at->diffForHumans() }}
+                                </p>
+                            </div>
+
+                            <!-- Action Button -->
+                            <a href="{{ route('certificates.view', $certificate->id) }}" 
+                               target="_blank"
+                               class="block w-full text-center bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:from-yellow-600 hover:to-yellow-700 transition-all">
+                                <i class="fas fa-certificate mr-2"></i>View Certificate
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- Quick Actions -->
     <div class="mt-8 bg-white shadow rounded-lg p-6">

@@ -112,7 +112,7 @@
                                         @if($registration->role === 'both')
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">Both</span>
                                         @elseif($registration->role === 'participant')
-                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Participant</span>
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800">Participant</span>
                                         @elseif($registration->role === 'jury')
                                             <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">Jury</span>
                                         @endif

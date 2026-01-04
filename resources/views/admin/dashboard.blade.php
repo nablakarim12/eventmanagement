@@ -8,7 +8,7 @@
     <!-- Total Events Card -->
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
-            <div class="p-3 rounded-full bg-blue-100 text-blue-500">
+            <div class="p-3 rounded-full bg-indigo-100 text-indigo-500">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -85,7 +85,7 @@
 <div class="bg-white rounded-lg shadow p-6 mb-8">
     <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-800">Recent Organizer Applications</h3>
-        <a href="{{ route('admin.organizers.index') }}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">View All</a>
+        <a href="{{ route('admin.organizers.index') }}" class="text-indigo-600 hover:text-indigo-700 text-sm font-medium">View All</a>
     </div>
     
     @if($recentOrganizers->count() > 0)
@@ -119,7 +119,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $organizer->created_at->format('M d, Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="{{ route('admin.organizers.show', $organizer) }}" class="text-blue-600 hover:text-blue-900">View</a>
+                            <a href="{{ route('admin.organizers.show', $organizer) }}" class="text-indigo-600 hover:text-indigo-900">View</a>
                         </td>
                     </tr>
                     @endforeach

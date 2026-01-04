@@ -354,7 +354,17 @@ class QrCodeController extends Controller
                 ->whereHas('qrCodes')->count()
         ];
         
-        return view('organizer.qr-codes.index', compact('qrCodes', 'events', 'stats'));
+        // Get all conference events
+        $conferenceEvents = Event::where('organizer_id', $organizer->id)
+            ->whereNotNull('delivery_mode')
+            ->where('status', 'published')
+            ->withCount(['registrations as approved_presenters' => function($q) {
+                $q->where('presentation_status', 'selected');
+            }])
+            ->orderBy('start_date', 'desc')
+            ->get();
+        
+        return view('organizer.qr-codes.index', compact('qrCodes', 'events', 'stats', 'conferenceEvents'));
     }
     
     public function showGeneral(EventQrCode $qrCode)
@@ -373,7 +383,16 @@ class QrCodeController extends Controller
             'last_scan' => $qrCode->last_scanned_at
         ];
         
-        return view('organizer.qr-codes.show-general', compact('qrCode', 'scanStats'));
+        // Recent scans (empty collection for now)
+        $recentScans = collect([]);
+        
+        // Chart data for last 7 days (placeholder)
+        $chartData = [
+            'labels' => ['6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Yesterday', 'Today'],
+            'data' => [0, 0, 0, 0, 0, 0, $qrCode->scan_count]
+        ];
+        
+        return view('organizer.qr-codes.show', compact('qrCode', 'scanStats', 'recentScans', 'chartData'));
     }
     
     public function downloadGeneral(EventQrCode $qrCode)
@@ -384,7 +403,65 @@ class QrCodeController extends Controller
             abort(403);
         }
         
-        return response()->download(storage_path('app/' . $qrCode->qr_image_path));
+        $filePath = storage_path('app/public/' . $qrCode->qr_image_path);
+        
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'QR code image file not found. Please regenerate the QR code.');
+        }
+        
+        return response()->download($filePath);
+    }
+    
+    public function editGeneral(EventQrCode $qrCode)
+    {
+        $organizer = Auth::guard('organizer')->user();
+        
+        if ($qrCode->event->organizer_id !== $organizer->id) {
+            abort(403);
+        }
+        
+        return redirect()->route('organizer.events.qr-codes.edit', [$qrCode->event, $qrCode]);
+    }
+    
+    public function updateGeneral(Request $request, EventQrCode $qrCode)
+    {
+        $organizer = Auth::guard('organizer')->user();
+        
+        if ($qrCode->event->organizer_id !== $organizer->id) {
+            abort(403);
+        }
+        
+        $request->validate([
+            'description' => 'nullable|string|max:500',
+            'valid_from' => 'nullable|date',
+            'valid_until' => 'nullable|date|after:valid_from',
+        ]);
+        
+        $qrCode->update([
+            'description' => $request->description,
+            'valid_from' => $request->valid_from,
+            'valid_until' => $request->valid_until,
+        ]);
+        
+        return redirect()->route('organizer.qr-codes.show', $qrCode)
+            ->with('success', 'QR Code updated successfully!');
+    }
+    
+    public function toggleGeneral(EventQrCode $qrCode)
+    {
+        $organizer = Auth::guard('organizer')->user();
+        
+        if ($qrCode->event->organizer_id !== $organizer->id) {
+            abort(403);
+        }
+        
+        $qrCode->update(['is_active' => !$qrCode->is_active]);
+        
+        return response()->json([
+            'success' => true,
+            'is_active' => $qrCode->is_active,
+            'message' => $qrCode->is_active ? 'QR Code activated' : 'QR Code deactivated'
+        ]);
     }
     
     public function destroyGeneral(EventQrCode $qrCode)

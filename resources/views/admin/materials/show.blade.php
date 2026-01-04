@@ -7,7 +7,7 @@
 <div class="space-y-6">
     <!-- Back Button -->
     <div>
-        <a href="{{ route('admin.materials.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+        <a href="{{ route('admin.materials.index') }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-800">
             <i class="fas fa-arrow-left mr-2"></i>Back to Materials
         </a>
     </div>
@@ -56,7 +56,7 @@
                     <!-- Actions -->
                     <div class="flex space-x-4 pt-4">
                         <a href="{{ route('admin.materials.download', $material) }}" 
-                           class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                           class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                             <i class="fas fa-download mr-2"></i>Download Material
                         </a>
                         <form action="{{ route('admin.materials.destroy', $material) }}" 
@@ -74,19 +74,19 @@
                 <!-- Sidebar -->
                 <div class="space-y-6">
                     <!-- Event Information -->
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="text-sm font-medium text-blue-800 mb-3">Event Information</h4>
+                    <div class="bg-indigo-50 p-4 rounded-lg">
+                        <h4 class="text-sm font-medium text-indigo-800 mb-3">Event Information</h4>
                         <div class="space-y-2">
                             <div>
-                                <span class="text-sm font-medium text-blue-700">Event:</span>
-                                <p class="text-sm text-blue-600">{{ $material->event->title }}</p>
+                                <span class="text-sm font-medium text-indigo-700">Event:</span>
+                                <p class="text-sm text-indigo-600">{{ $material->event->title }}</p>
                             </div>
                             <div>
-                                <span class="text-sm font-medium text-blue-700">Date:</span>
-                                <p class="text-sm text-blue-600">{{ $material->event->start_date->format('M d, Y') }}</p>
+                                <span class="text-sm font-medium text-indigo-700">Date:</span>
+                                <p class="text-sm text-indigo-600">{{ $material->event->start_date->format('M d, Y') }}</p>
                             </div>
                             <div>
-                                <span class="text-sm font-medium text-blue-700">Status:</span>
+                                <span class="text-sm font-medium text-indigo-700">Status:</span>
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
                                     @if($material->event->status === 'active') bg-green-100 text-green-800
                                     @elseif($material->event->status === 'draft') bg-yellow-100 text-yellow-800
@@ -126,7 +126,7 @@
                             <div>
                                 <span class="text-sm font-medium text-purple-700">Type:</span>
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full
-                                    @if($material->type === 'resource') bg-blue-100 text-blue-800
+                                    @if($material->type === 'resource') bg-indigo-100 text-indigo-800
                                     @elseif($material->type === 'handout') bg-green-100 text-green-800
                                     @elseif($material->type === 'presentation') bg-purple-100 text-purple-800
                                     @else bg-gray-100 text-gray-800

@@ -1,10 +1,10 @@
 @echo off
 echo ============================================
-echo  EventSphere Database Sharing Package
+echo  ConVex Database Sharing Package
 echo ============================================
 echo.
 
-set SHARE_DIR=EventSphere_Database_Share
+set SHARE_DIR=ConVex_Database_Share
 set TIMESTAMP=%date:~-4,4%%date:~-10,2%%date:~-7,2%_%time:~0,2%%time:~3,2%
 
 echo Creating sharing package...
@@ -60,7 +60,7 @@ copy "SHARING_CHECKLIST.md" "%SHARE_DIR%\docs\"
 
 echo.
 echo Creating instructions file...
-echo # EventSphere Database Package > %SHARE_DIR%\README.md
+echo # ConVex Database Package > %SHARE_DIR%\README.md
 echo. >> %SHARE_DIR%\README.md
 echo ## Installation Instructions >> %SHARE_DIR%\README.md
 echo. >> %SHARE_DIR%\README.md

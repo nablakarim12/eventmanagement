@@ -142,6 +142,20 @@ class EventQrCode extends Model
         $fileName = "qr_attendance_{$event->id}_{$user->id}_" . time() . ".png";
         $imagePath = "qr_codes/{$fileName}";
 
+        // Determine start and end dates based on event type
+        $startDate = null;
+        $endDate = null;
+
+        if (in_array($event->event_form_type, ['innovation', 'conference'])) {
+            // For Innovation/Conference events, use f2f_start_date as primary
+            $startDate = $event->f2f_start_date ?? $event->online_start_date;
+            $endDate = $event->f2f_end_date ?? $event->online_end_date;
+        } else {
+            // For standard events, use start_date
+            $startDate = $event->start_date;
+            $endDate = $event->end_date;
+        }
+
         return self::create([
             'event_id' => $event->id,
             'user_id' => $user->id,
@@ -149,8 +163,8 @@ class EventQrCode extends Model
             'type' => 'attendance',
             'data' => $data,
             'qr_image_path' => $imagePath,
-            'valid_from' => $event->start_date,
-            'valid_until' => $event->end_date ?? $event->start_date->addDay(),
+            'valid_from' => $startDate,
+            'valid_until' => $endDate ?? ($startDate ? $startDate->copy()->addDay() : now()->addDay()),
             'description' => "Attendance QR for {$user->name} ({$roleType}) - {$event->title}"
         ]);
     }
@@ -171,14 +185,28 @@ class EventQrCode extends Model
         $fileName = "qr_code_{$event->id}_{$type}_" . time() . ".png";
         $imagePath = "qr_codes/{$fileName}";
 
+        // Determine start and end dates based on event type
+        $startDate = null;
+        $endDate = null;
+
+        if (in_array($event->event_form_type, ['innovation', 'conference'])) {
+            // For Innovation/Conference events, use f2f_start_date as primary
+            $startDate = $event->f2f_start_date ?? $event->online_start_date;
+            $endDate = $event->f2f_end_date ?? $event->online_end_date;
+        } else {
+            // For standard events, use start_date
+            $startDate = $event->start_date;
+            $endDate = $event->end_date;
+        }
+
         return self::create([
             'event_id' => $event->id,
             'qr_code' => $qrCode,
             'type' => $type,
             'data' => $data,
             'qr_image_path' => $imagePath,
-            'valid_from' => $event->start_date,
-            'valid_until' => $event->end_date ?? $event->start_date->addDay(),
+            'valid_from' => $startDate,
+            'valid_until' => $endDate ?? ($startDate ? $startDate->copy()->addDay() : now()->addDay()),
             'description' => "QR Code for {$type} - {$event->title}"
         ]);
     }

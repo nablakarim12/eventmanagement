@@ -8,7 +8,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 class="text-2xl font-bold">Event Organizers</h1>
         <a href="{{ route('admin.organizers.create') }}" 
-           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+           class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -50,7 +50,7 @@
 
                 <div class="flex flex-wrap gap-2">
                     <a href="{{ route('admin.organizers.show', $organizer) }}" 
-                       class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200">View</a>
+                       class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded text-sm hover:bg-indigo-200">View</a>
                     <a href="{{ route('admin.organizers.edit', $organizer) }}" 
                        class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded text-sm hover:bg-indigo-200">Edit</a>
                     <form action="{{ route('admin.organizers.destroy', $organizer) }}" 
@@ -117,7 +117,7 @@
                             <td class="px-4 py-4 text-sm font-medium">
                                 <div class="flex flex-col space-y-1">
                                     <a href="{{ route('admin.organizers.show', $organizer) }}" 
-                                       class="text-blue-600 hover:text-blue-900 text-xs">View</a>
+                                       class="text-indigo-600 hover:text-indigo-900 text-xs">View</a>
                                     <a href="{{ route('admin.organizers.edit', $organizer) }}" 
                                        class="text-indigo-600 hover:text-indigo-900 text-xs">Edit</a>
                                     <form action="{{ route('admin.organizers.destroy', $organizer) }}" 

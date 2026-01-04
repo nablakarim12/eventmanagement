@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Events') - EventSphere</title>
+    <title>@yield('title', 'Events') - ConVex</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,8 +17,8 @@
                 <!-- Logo and Main Navigation -->
                 <div class="flex items-center">
                     <a href="{{ route('events.index') }}" class="flex items-center space-x-2">
-                        <img src="{{ asset('assets/images/eventsphere-icon.svg') }}" alt="EventSphere" class="h-8 w-8">
-                        <span class="text-2xl font-bold text-gray-800">EventSphere</span>
+                        <img src="{{ asset('assets/images/eventsphere-icon.svg') }}" alt="ConVex" class="h-8 w-8">
+                        <span class="text-2xl font-bold text-gray-800">ConVex</span>
                     </a>
                     
                     <div class="hidden md:ml-8 md:flex md:space-x-8">
@@ -105,8 +105,8 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center space-x-2 mb-4">
-                        <img src="{{ asset('assets/images/eventsphere-icon.svg') }}" alt="EventSphere" class="h-8 w-8 brightness-0 invert">
-                        <span class="text-2xl font-bold">EventSphere</span>
+                        <img src="{{ asset('assets/images/eventsphere-icon.svg') }}" alt="ConVex" class="h-8 w-8 brightness-0 invert">
+                        <span class="text-2xl font-bold">ConVex</span>
                     </div>
                     <p class="text-gray-400 mb-4">
                         Smart Conference and Innovation Event System. Connecting organizers, 
@@ -125,13 +125,13 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Contact</h3>
                     <p class="text-gray-400">
-                        Email: info@eventsphere.com<br>
+                        Email: info@convex.com<br>
                         Phone: (123) 456-7890
                     </p>
                 </div>
             </div>
             <div class="mt-8 pt-8 border-t border-gray-700 text-center">
-                <p class="text-gray-400">&copy; {{ date('Y') }} EventSphere. All rights reserved.</p>
+                <p class="text-gray-400">&copy; {{ date('Y') }} ConVex. All rights reserved.</p>
             </div>
         </div>
     </footer>

@@ -1,334 +1,250 @@
 @extends('organizer.layouts.app')
 
-@section('title', 'Event Registrations - ' . $event->title)
-@section('page-title', 'Event Registrations')
+@section('title', ucfirst($eventType) . ' Event Registrations - ' . $event->title)
+@section('page-title', ucfirst($eventType) . ' Event Registrations')
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">{{ $event->title }}</h1>
-            <p class="text-gray-600 mt-1">Event registrations and participant management</p>
-        </div>
-        <div class="flex space-x-3">
-            <a href="{{ route('organizer.registrations.index') }}" 
-               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-arrow-left mr-2"></i>All Registrations
-            </a>
-            <a href="{{ route('organizer.registrations.export', ['event_id' => $event->id]) }}" 
-               class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center">
-                <i class="fas fa-download mr-2"></i>Export CSV
-            </a>
-        </div>
+    <!-- Breadcrumb -->
+    <div class="mb-6">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="{{ route('organizer.registrations.index') }}" class="text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-list mr-2"></i>All Registrations
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-gray-500">{{ Str::limit($event->title, 50) }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
     </div>
 
-    <!-- Event Information -->
-    <div class="bg-white rounded-lg shadow mb-6">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">Event Details</h2>
-        </div>
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Event Date</label>
-                    <p class="text-gray-900">{{ \Carbon\Carbon::parse($event->start_date)->format('F j, Y') }}</p>
+    <!-- Event Header -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div class="flex items-center">
+            @if($event->featured_image)
+                <img src="{{ str_starts_with($event->featured_image, 'http') ? $event->featured_image : asset('storage/' . $event->featured_image) }}" 
+                     alt="{{ $event->title }}"
+                     class="w-24 h-24 rounded-lg object-cover">
+            @else
+                <div class="w-24 h-24 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-white text-3xl"></i>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                    <p class="text-gray-900">{{ $event->location ?? 'TBD' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Registration Fee</label>
-                    <p class="text-gray-900">${{ number_format($event->registration_fee, 2) }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Participants</label>
-                    <p class="text-gray-900">{{ $event->max_participants ?? 'Unlimited' }}</p>
+            @endif
+            <div class="ml-6">
+                <h1 class="text-2xl font-bold text-gray-900">{{ $event->title }}</h1>
+                <p class="text-gray-600 mt-1">{{ $event->registration_code }}</p>
+                <div class="flex items-center mt-2 space-x-4">
+                    <span class="text-sm text-gray-500">
+                        <i class="far fa-calendar mr-1"></i>
+                        {{ \Carbon\Carbon::parse($event->f2f_start_date ?? $event->start_date)->format('M d, Y') }}
+                    </span>
+                    @if($event->delivery_mode)
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
+                            {{ ucfirst(str_replace('_', ' ', $event->delivery_mode)) }}
+                        </span>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-7 gap-4 mb-6">
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                    <i class="fas fa-users text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['total']) }}</p>
-                </div>
+    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-center">
+                <p class="text-3xl font-bold text-gray-900">{{ $stats['total'] }}</p>
+                <p class="text-sm text-gray-600 mt-1">Total</p>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-green-100 text-green-600">
-                    <i class="fas fa-check-circle text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Confirmed</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['confirmed']) }}</p>
-                </div>
+        
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-center">
+                <p class="text-3xl font-bold text-green-600">{{ $stats['confirmed'] }}</p>
+                <p class="text-sm text-gray-600 mt-1">Confirmed</p>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                    <i class="fas fa-clock text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Pending</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['pending']) }}</p>
-                </div>
+        
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-center">
+                <p class="text-3xl font-bold text-yellow-600">{{ $stats['pending'] }}</p>
+                <p class="text-sm text-gray-600 mt-1">Pending</p>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                    <i class="fas fa-user-check text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Attended</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['attended']) }}</p>
-                </div>
+        
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-center">
+                <p class="text-3xl font-bold text-red-600">{{ $stats['cancelled'] }}</p>
+                <p class="text-sm text-gray-600 mt-1">Cancelled</p>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-red-100 text-red-600">
-                    <i class="fas fa-times-circle text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Cancelled</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['cancelled']) }}</p>
-                </div>
+        
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-center">
+                <p class="text-3xl font-bold text-indigo-600">{{ $stats['participants'] }}</p>
+                <p class="text-sm text-gray-600 mt-1">Participants</p>
             </div>
         </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
-                    <i class="fas fa-user text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Participants</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['participants']) }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-emerald-100 text-emerald-600">
-                    <i class="fas fa-gavel text-xl"></i>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Jury</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['jury']) }}</p>
-                </div>
+        
+        <div class="bg-white rounded-lg shadow p-4">
+            <div class="text-center">
+                <p class="text-3xl font-bold text-purple-600">{{ $stats['reviewers'] }}</p>
+                <p class="text-sm text-gray-600 mt-1">{{ $secondaryRoleLabel }}</p>
             </div>
         </div>
     </div>
 
-    <!-- Registrations Table -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        @if($registrations->count() > 0)
-            <form id="bulkForm" method="POST" action="{{ route('organizer.registrations.bulk-update') }}">
-                @csrf
-                <input type="hidden" name="event_id" value="{{ $event->id }}">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <input type="checkbox" id="selectAll" class="rounded">
-                            <label for="selectAll" class="text-sm font-medium text-gray-700">Select All</label>
-                        </div>
-                        <div class="flex space-x-2" id="bulkActions" style="display: none;">
-                            <select name="action" class="px-3 py-1 border border-gray-300 rounded text-sm">
-                                <option value="">Bulk Actions</option>
-                                <option value="confirm">Confirm Selected</option>
-                                <option value="cancel">Cancel Selected</option>
-                                <option value="mark_paid">Mark as Paid</option>
-                                <option value="mark_attended">Mark as Attended</option>
-                            </select>
-                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm">
-                                Apply
-                            </button>
-                        </div>
-                    </div>
+    <!-- Participants Section -->
+    <div class="bg-white rounded-lg shadow mb-6">
+        <div class="p-6 border-b border-gray-200 bg-indigo-50">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">
+                        <i class="fas fa-user mr-2 text-indigo-600"></i>
+                        Participants ({{ $stats['participants'] }})
+                    </h2>
+                    <p class="text-sm text-gray-600 mt-1">
+                        {{ $stats['participants_pending'] }} pending · {{ $stats['participants_confirmed'] }} confirmed
+                    </p>
                 </div>
+            </div>
+        </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Select
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Participant
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Role
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Registration Date
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Payment
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($registrations as $registration)
-                                @php
-                                    $roles = $registration->role === 'both' ? ['participant', 'jury'] : [$registration->role];
-                                @endphp
-                                @foreach($roles as $displayRole)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <input type="checkbox" name="registration_ids[]" value="{{ $registration->id }}" 
-                                               class="registration-checkbox rounded">
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                    <span class="text-sm font-medium text-indigo-800">
-                                                        {{ strtoupper(substr($registration->user->name, 0, 2)) }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ $registration->user->name }}
-                                                </div>
-                                                <div class="text-sm text-gray-500">
-                                                    {{ $registration->user->email }}
-                                                </div>
-                                                <div class="text-sm text-gray-500">
-                                                    {{ $registration->registration_code }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($displayRole === 'participant')
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                <i class="fas fa-user mr-1"></i>Participant
-                                            </span>
-                                        @elseif($displayRole === 'jury')
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                <i class="fas fa-gavel mr-1"></i>Jury
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                <i class="fas fa-question mr-1"></i>{{ ucfirst($displayRole ?? 'Unknown') }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ $registration->created_at->format('M d, Y') }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            @if($registration->status === 'confirmed') bg-green-100 text-green-800
-                                            @elseif($registration->status === 'pending') bg-yellow-100 text-yellow-800
-                                            @elseif($registration->status === 'cancelled') bg-red-100 text-red-800
-                                            @elseif($registration->status === 'attended') bg-blue-100 text-blue-800
-                                            @else bg-gray-100 text-gray-800 @endif">
-                                            {{ ucfirst($registration->status) }}
+        @if($participants->count() > 0)
+            <div class="divide-y divide-gray-200">
+                @foreach($participants as $registration)
+                    <a href="{{ route('organizer.registrations.show', $registration->id) }}" 
+                       class="block p-6 hover:bg-gray-50 transition duration-150">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                                        <span class="text-indigo-600 font-semibold text-lg">
+                                            {{ strtoupper(substr($registration->user->name, 0, 2)) }}
                                         </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            @if($registration->payment_status === 'paid') bg-green-100 text-green-800
-                                            @elseif($registration->payment_status === 'pending') bg-yellow-100 text-yellow-800
-                                            @elseif($registration->payment_status === 'failed') bg-red-100 text-red-800
-                                            @elseif($registration->payment_status === 'refunded') bg-purple-100 text-purple-800
-                                            @else bg-gray-100 text-gray-800 @endif">
-                                            {{ ucfirst($registration->payment_status) }}
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">{{ $registration->user->name }}</h3>
+                                    <p class="text-sm text-gray-600">{{ $registration->user->email }}</p>
+                                    @if($registration->selected_category)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 mt-1">
+                                            <i class="fas fa-tag mr-1"></i>{{ $registration->selected_category }}
                                         </span>
-                                        @if($registration->amount_paid)
-                                            <div class="text-xs text-gray-500 mt-1">
-                                                ${{ number_format($registration->amount_paid, 2) }}
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('organizer.registrations.show', $registration->id) }}" 
-                                               class="text-indigo-600 hover:text-indigo-900" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            @if($registration->status !== 'attended')
-                                                <form method="POST" action="{{ route('organizer.registrations.check-in', $registration->id) }}" class="inline">
-                                                    @csrf
-                                                    <button type="submit" class="text-green-600 hover:text-green-900" title="Check In">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </form>
+                                    @endif
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Registered: {{ $registration->created_at->format('M d, Y h:i A') }}
+                                    </p>
+                                </div>
+                            </div>
 
-            <!-- Pagination -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                {{ $registrations->links() }}
+                            <div class="flex items-center space-x-4">
+                                <!-- Status Badge -->
+                                @if($registration->status === 'pending')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+                                        <i class="fas fa-clock mr-1"></i> Pending
+                                    </span>
+                                @elseif($registration->status === 'confirmed')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                                        <i class="fas fa-check mr-1"></i> Confirmed
+                                    </span>
+                                @elseif($registration->status === 'cancelled')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+                                        <i class="fas fa-times mr-1"></i> Cancelled
+                                    </span>
+                                @endif
+
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
             </div>
         @else
-            <div class="text-center py-12">
-                <i class="fas fa-users text-4xl text-gray-300 mb-4"></i>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">No registrations yet</h3>
-                <p class="text-gray-500">No participants have registered for this event yet.</p>
+            <div class="p-12 text-center">
+                <i class="fas fa-user-slash text-gray-300 text-5xl mb-4"></i>
+                <p class="text-gray-500">No participants registered yet</p>
+            </div>
+        @endif
+    </div>
+
+    <!-- Reviewers/Jury Section -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-6 border-b border-gray-200 bg-purple-50">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">
+                        <i class="fas {{ $eventType === 'innovation' ? 'fa-gavel' : 'fa-user-graduate' }} mr-2 text-purple-600"></i>
+                        {{ $secondaryRoleLabel }} ({{ $stats['reviewers'] }})
+                    </h2>
+                    <p class="text-sm text-gray-600 mt-1">
+                        {{ $stats['reviewers_pending'] }} pending · {{ $stats['reviewers_confirmed'] }} confirmed
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        @if($reviewers->count() > 0)
+            <div class="divide-y divide-gray-200">
+                @foreach($reviewers as $registration)
+                    <a href="{{ route('organizer.registrations.show', $registration->id) }}" 
+                       class="block p-6 hover:bg-gray-50 transition duration-150">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                                        <span class="text-purple-600 font-semibold text-lg">
+                                            {{ strtoupper(substr($registration->user->name, 0, 2)) }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">{{ $registration->user->name }}</h3>
+                                    <p class="text-sm text-gray-600">{{ $registration->user->email }}</p>
+                                    @if($registration->selected_category)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 mt-1">
+                                            <i class="fas fa-tag mr-1"></i>{{ $registration->selected_category }}
+                                        </span>
+                                    @endif
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Registered: {{ $registration->created_at->format('M d, Y h:i A') }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-4">
+                                <!-- Status Badge -->
+                                @if($registration->status === 'pending')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+                                        <i class="fas fa-clock mr-1"></i> Pending
+                                    </span>
+                                @elseif($registration->status === 'confirmed')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">
+                                        <i class="fas fa-check mr-1"></i> Confirmed
+                                    </span>
+                                @elseif($registration->status === 'cancelled')
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+                                        <i class="fas fa-times mr-1"></i> Cancelled
+                                    </span>
+                                @endif
+
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        @else
+            <div class="p-12 text-center">
+                <i class="fas {{ $eventType === 'innovation' ? 'fa-gavel' : 'fa-user-graduate' }} text-gray-300 text-5xl mb-4"></i>
+                <p class="text-gray-500">No {{ strtolower($secondaryRoleLabel) }} registered yet</p>
             </div>
         @endif
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const selectAllCheckbox = document.getElementById('selectAll');
-    const registrationCheckboxes = document.querySelectorAll('.registration-checkbox');
-    const bulkActions = document.getElementById('bulkActions');
-
-    selectAllCheckbox.addEventListener('change', function() {
-        registrationCheckboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
-        });
-        toggleBulkActions();
-    });
-
-    registrationCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', toggleBulkActions);
-    });
-
-    function toggleBulkActions() {
-        const checkedBoxes = document.querySelectorAll('.registration-checkbox:checked');
-        if (checkedBoxes.length > 0) {
-            bulkActions.style.display = 'flex';
-        } else {
-            bulkActions.style.display = 'none';
-        }
-    }
-});
-</script>
 @endsection

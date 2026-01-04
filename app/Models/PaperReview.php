@@ -18,6 +18,7 @@ class PaperReview extends Model
         'methodology_score',
         'clarity_score',
         'contribution_score',
+        'custom_scores',
         'overall_score',
         'strengths',
         'weaknesses',
@@ -34,6 +35,7 @@ class PaperReview extends Model
         'clarity_score' => 'decimal:2',
         'contribution_score' => 'decimal:2',
         'overall_score' => 'decimal:2',
+        'custom_scores' => 'array',
         'submitted_at' => 'datetime',
     ];
 

@@ -1,8 +1,8 @@
-# EventSphere Database Schema
+# ConVex Database Schema
 
 ## Database Structure Overview
 
-This document describes the current database structure for the EventSphere application.
+This document describes the current database structure for the ConVex application.
 
 ## Tables Created
 

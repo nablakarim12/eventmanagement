@@ -16,6 +16,10 @@ class Event extends Model
     protected $fillable = [
         'organizer_id',
         'category_id',
+        'delivery_mode',
+        'innovation_categories',
+        'innovation_theme',
+        'conference_categories',
         'title',
         'description',
         'short_description',
@@ -23,6 +27,78 @@ class Event extends Model
         'end_date',
         'start_time',
         'end_time',
+        // Face-to-face specific fields
+        'f2f_start_date',
+        'f2f_end_date',
+        'f2f_start_time',
+        'f2f_end_time',
+        'f2f_registration_deadline',
+        'f2f_paper_deadline',
+        'f2f_acceptance_date',
+        'f2f_jury_registration_deadline',
+        'f2f_payment_deadline',
+        'f2f_extended_paper_deadlines',
+        'f2f_extended_acceptance_dates',
+        'f2f_extension_count',
+        // New innovation date fields
+        'jury_registration_deadline',
+        'submission_deadline',
+        'acceptance_notification_date',
+        'extended_registration_deadline',
+        'extended_jury_deadline',
+        'extended_submission_deadline',
+        'extended_notification_date',
+        'f2f_submission_deadline',
+        'f2f_acceptance_notification_date',
+        'f2f_extended_registration_deadline',
+        'f2f_extended_jury_deadline',
+        'f2f_extended_submission_deadline',
+        'f2f_extended_notification_date',
+        'f2f_payment_deadline_new',
+        // Online specific fields
+        'online_start_date',
+        'online_end_date',
+        'online_start_time',
+        'online_end_time',
+        'online_platform_url',
+        'online_registration_deadline',
+        'online_paper_deadline',
+        'online_acceptance_date',
+        'online_jury_registration_deadline',
+        'online_extended_paper_deadlines',
+        'online_extended_acceptance_dates',
+        'online_extension_count',
+        'online_jury_registration_deadline_new',
+        'online_submission_deadline',
+        'online_acceptance_notification_date_new',
+        'online_extended_registration_deadline',
+        'online_extended_jury_deadline',
+        'online_extended_submission_deadline',
+        'online_extended_notification_date',
+        'online_payment_deadline_new',
+        // Conference-specific fields
+        'conference_categories',
+        'reviewer_registration_deadline',
+        'paper_submission_deadline',
+        'review_deadline',
+        'acceptance_notification_date',
+        'f2f_reviewer_registration_deadline',
+        'f2f_paper_submission_deadline',
+        'f2f_review_deadline',
+        'f2f_acceptance_notification_date',
+        'f2f_payment_deadline',
+        'online_reviewer_registration_deadline',
+        'online_paper_submission_deadline',
+        'online_review_deadline',
+        'online_acceptance_notification_date',
+        'online_payment_deadline',
+        'min_abstract_words',
+        'min_keywords',
+        'max_paper_size_mb',
+        'paper_format_guidelines',
+        'allow_multiple_submissions',
+        'min_reviewers_per_paper',
+        // Common fields
         'venue_name',
         'venue_address',
         'city',
@@ -33,6 +109,7 @@ class Event extends Model
         'max_participants',
         'current_participants',
         'registration_fee',
+        'payment_deadline',
         'is_free',
         'registration_deadline',
         'status',
@@ -46,6 +123,7 @@ class Event extends Model
         'website_url',
         'slug',
         'featured_image',
+        'featured_image_public_id',
         'gallery_images',
         'views',
         'budget',
@@ -57,6 +135,70 @@ class Event extends Model
         'registration_deadline' => 'datetime',
         'start_time' => 'datetime:H:i',
         'end_time' => 'datetime:H:i',
+        // Face-to-face dates
+        'f2f_start_date' => 'datetime',
+        'f2f_end_date' => 'datetime',
+        'f2f_start_time' => 'datetime:H:i',
+        'f2f_end_time' => 'datetime:H:i',
+        'f2f_registration_deadline' => 'datetime',
+        'f2f_paper_deadline' => 'date',
+        'f2f_acceptance_date' => 'date',
+        'f2f_jury_registration_deadline' => 'datetime',
+        'f2f_extended_paper_deadlines' => 'array',
+        'f2f_extended_acceptance_dates' => 'array',
+        // New innovation date casts
+        'jury_registration_deadline' => 'datetime',
+        'submission_deadline' => 'datetime',
+        'acceptance_notification_date' => 'datetime',
+        'extended_registration_deadline' => 'datetime',
+        'extended_jury_deadline' => 'datetime',
+        'extended_submission_deadline' => 'datetime',
+        'extended_notification_date' => 'datetime',
+        'f2f_submission_deadline' => 'datetime',
+        'f2f_acceptance_notification_date' => 'datetime',
+        'online_jury_registration_deadline_new' => 'datetime',
+        'online_submission_deadline' => 'datetime',
+        'online_acceptance_notification_date_new' => 'datetime',
+        'online_extended_registration_deadline' => 'datetime',
+        'online_extended_jury_deadline' => 'datetime',
+        'online_extended_submission_deadline' => 'datetime',
+        'online_extended_notification_date' => 'datetime',
+        'online_payment_deadline_new' => 'datetime',
+        'f2f_extended_registration_deadline' => 'datetime',
+        'f2f_extended_jury_deadline' => 'datetime',
+        'f2f_extended_submission_deadline' => 'datetime',
+        'f2f_extended_notification_date' => 'datetime',
+        'f2f_payment_deadline_new' => 'datetime',
+        // Online dates
+        'online_start_date' => 'datetime',
+        'online_end_date' => 'datetime',
+        'online_start_time' => 'datetime:H:i',
+        'online_end_time' => 'datetime:H:i',
+        'online_paper_deadline' => 'date',
+        'online_acceptance_date' => 'date',
+        'online_jury_registration_deadline' => 'datetime',
+        'online_extended_paper_deadlines' => 'array',
+        'online_extended_acceptance_dates' => 'array',
+        // Conference-specific dates
+        'conference_categories' => 'array',
+        'innovation_categories' => 'array',
+        'innovation_theme' => 'array',
+        'reviewer_registration_deadline' => 'datetime',
+        'paper_submission_deadline' => 'datetime',
+        'review_deadline' => 'datetime',
+        'acceptance_notification_date' => 'datetime',
+        'f2f_reviewer_registration_deadline' => 'datetime',
+        'f2f_paper_submission_deadline' => 'datetime',
+        'f2f_review_deadline' => 'datetime',
+        'f2f_acceptance_notification_date' => 'datetime',
+        'f2f_payment_deadline' => 'datetime',
+        'online_reviewer_registration_deadline' => 'datetime',
+        'online_paper_submission_deadline' => 'datetime',
+        'online_review_deadline' => 'datetime',
+        'online_acceptance_notification_date' => 'datetime',
+        'online_payment_deadline' => 'datetime',
+        'payment_deadline' => 'datetime',
+        // Other fields
         'registration_fee' => 'decimal:2',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
@@ -65,6 +207,8 @@ class Event extends Model
         'is_public' => 'boolean',
         'allow_waitlist' => 'boolean',
         'requirements' => 'array',
+        'innovation_categories' => 'array',
+        'conference_categories' => 'array',
         'tags' => 'array',
         'gallery_images' => 'array',
     ];
@@ -116,6 +260,21 @@ class Event extends Model
         return $this->hasMany(EventAttendance::class);
     }
 
+    public function certificateTemplates(): HasMany
+    {
+        return $this->hasMany(CertificateTemplate::class);
+    }
+
+    public function simpleCertificateTemplates(): HasMany
+    {
+        return $this->hasMany(SimpleCertificateTemplate::class);
+    }
+
+    public function generatedCertificates(): HasMany
+    {
+        return $this->hasMany(GeneratedCertificate::class);
+    }
+
     public function qrCodes(): HasMany
     {
         return $this->hasMany(EventQrCode::class);
@@ -134,6 +293,11 @@ class Event extends Model
     public function reviewCriteria(): HasMany
     {
         return $this->hasMany(ReviewCriteria::class);
+    }
+
+    public function rubricCategories(): HasMany
+    {
+        return $this->hasMany(RubricCategory::class)->orderBy('order');
     }
 
     // Accessors

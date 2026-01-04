@@ -8,7 +8,7 @@
     <div class="max-w-2xl mx-auto">
         <div class="flex items-center mb-6">
             <a href="{{ route('admin.organizers.index') }}" 
-               class="text-blue-600 hover:text-blue-800 mr-4">
+               class="text-indigo-600 hover:text-indigo-800 mr-4">
                 ← Back to Organizers
             </a>
             <h1 class="text-2xl font-bold">Add New Event Organizer</h1>
@@ -31,7 +31,7 @@
                                    id="org_name" 
                                    name="org_name" 
                                    value="{{ old('org_name') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('org_name') border-red-500 @enderror"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('org_name') border-red-500 @enderror"
                                    required>
                             @error('org_name')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -46,7 +46,7 @@
                                    id="org_email" 
                                    name="org_email" 
                                    value="{{ old('org_email') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('org_email') border-red-500 @enderror"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('org_email') border-red-500 @enderror"
                                    required>
                             @error('org_email')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -61,7 +61,7 @@
                         <textarea id="org_description" 
                                   name="org_description" 
                                   rows="3"
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('org_description') border-red-500 @enderror"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('org_description') border-red-500 @enderror"
                                   placeholder="Brief description of the organization...">{{ old('org_description') }}</textarea>
                         @error('org_description')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -77,7 +77,7 @@
                                    id="website" 
                                    name="website" 
                                    value="{{ old('website') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('website') border-red-500 @enderror"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('website') border-red-500 @enderror"
                                    placeholder="https://example.com">
                             @error('website')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -92,7 +92,7 @@
                                    id="phone" 
                                    name="phone" 
                                    value="{{ old('phone') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('phone') border-red-500 @enderror">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('phone') border-red-500 @enderror">
                             @error('phone')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -113,7 +113,7 @@
                                    id="contact_person_name" 
                                    name="contact_person_name" 
                                    value="{{ old('contact_person_name') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('contact_person_name') border-red-500 @enderror"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('contact_person_name') border-red-500 @enderror"
                                    required>
                             @error('contact_person_name')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -128,7 +128,7 @@
                                    id="contact_person_position" 
                                    name="contact_person_position" 
                                    value="{{ old('contact_person_position') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('contact_person_position') border-red-500 @enderror">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('contact_person_position') border-red-500 @enderror">
                             @error('contact_person_position')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -144,7 +144,7 @@
                                    id="contact_person_email" 
                                    name="contact_person_email" 
                                    value="{{ old('contact_person_email') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('contact_person_email') border-red-500 @enderror"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('contact_person_email') border-red-500 @enderror"
                                    required>
                             @error('contact_person_email')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -159,7 +159,7 @@
                                    id="contact_person_phone" 
                                    name="contact_person_phone" 
                                    value="{{ old('contact_person_phone') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('contact_person_phone') border-red-500 @enderror">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('contact_person_phone') border-red-500 @enderror">
                             @error('contact_person_phone')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -179,7 +179,7 @@
                                id="address" 
                                name="address" 
                                value="{{ old('address') }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('address') border-red-500 @enderror">
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('address') border-red-500 @enderror">
                         @error('address')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -194,7 +194,7 @@
                                    id="city" 
                                    name="city" 
                                    value="{{ old('city') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('city') border-red-500 @enderror">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('city') border-red-500 @enderror">
                             @error('city')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -208,7 +208,7 @@
                                    id="state" 
                                    name="state" 
                                    value="{{ old('state') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('state') border-red-500 @enderror">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('state') border-red-500 @enderror">
                             @error('state')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -222,7 +222,7 @@
                                    id="country" 
                                    name="country" 
                                    value="{{ old('country') }}"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('country') border-red-500 @enderror">
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('country') border-red-500 @enderror">
                             @error('country')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
@@ -242,7 +242,7 @@
                             <input type="password" 
                                    id="password" 
                                    name="password" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('password') border-red-500 @enderror"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('password') border-red-500 @enderror"
                                    required>
                             @error('password')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -256,7 +256,7 @@
                             <input type="password" 
                                    id="password_confirmation" 
                                    name="password_confirmation" 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                    required>
                         </div>
                     </div>
@@ -267,7 +267,7 @@
                         </label>
                         <select id="status" 
                                 name="status" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 @error('status') border-red-500 @enderror"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('status') border-red-500 @enderror"
                                 required>
                             <option value="">Select Status</option>
                             <option value="pending" {{ old('status') === 'pending' ? 'selected' : '' }}>Pending</option>
@@ -287,7 +287,7 @@
                         Cancel
                     </a>
                     <button type="submit" 
-                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         Create Organizer
                     </button>
                 </div>

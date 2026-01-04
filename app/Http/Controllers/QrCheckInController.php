@@ -65,6 +65,18 @@ class QrCheckInController extends Controller
             return response()->json(['error' => 'Registration not approved'], 403);
         }
 
+        // For Innovation events, ONLY jury can check in (not participants)
+        $event = $registration->event()->with('category')->first();
+        $isInnovationEvent = $event->category && $event->category->name === 'Innovation Competition';
+        if ($isInnovationEvent) {
+            $isJury = in_array($registration->role, ['jury', 'both']);
+            if (!$isJury) {
+                return response()->json([
+                    'error' => 'Only jury members can check in for Innovation Competition events. Participants do not need to check in.'
+                ], 403);
+            }
+        }
+
         // Mark as checked in
         if (!$registration->checked_in_at) {
             $registration->checked_in_at = Carbon::now();

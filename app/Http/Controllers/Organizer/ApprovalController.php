@@ -28,7 +28,7 @@ class ApprovalController extends Controller
 
         if ($filter === 'pending') {
             $events = $events->filter(function($event) {
-                return $event->registrations->where('approval_status', 'pending')->count() > 0;
+                return $event->registrations()->pendingApproval()->count() > 0;
             });
         }
 
@@ -47,8 +47,12 @@ class ApprovalController extends Controller
         $status = $request->get('status', 'all');
         $role = $request->get('role', 'all');
 
-        if ($status !== 'all') {
-            $query->where('approval_status', $status);
+        if ($status === 'pending') {
+            $query->pendingApproval();
+        } elseif ($status === 'approved') {
+            $query->approved();
+        } elseif ($status === 'rejected') {
+            $query->whereNotNull('rejected_at');
         }
 
         if ($role !== 'all') {
@@ -66,7 +70,7 @@ class ApprovalController extends Controller
             'total' => $event->registrations()->count(),
             'pending' => $event->registrations()->pendingApproval()->count(),
             'approved' => $event->registrations()->approved()->count(),
-            'rejected' => $event->registrations()->where('approval_status', 'rejected')->count(),
+            'rejected' => $event->registrations()->whereNotNull('rejected_at')->count(),
             'participants' => $event->registrations()->participants()->count(),
             'jury' => $event->registrations()->jury()->count(),
         ];
